@@ -12,14 +12,14 @@
 
 <style>
   :root{
-    --bg:#05070e;
-    --bg-2:#0a0f1c;
+    --bg:#061a2b;
+    --bg-2:#0a2740;
     --panel:rgba(255,255,255,.045);
     --panel-brd:rgba(255,255,255,.09);
-    --blue:#3f8cff;
-    --blue-2:#63a4ff;
-    --blue-deep:#1f4fd6;
-    --glow:rgba(63,140,255,.55);
+    --blue:#38bdf8;
+    --blue-2:#7dd3fc;
+    --blue-deep:#0284c7;
+    --glow:rgba(56,189,248,.55);
     --text:#eef3fd;
     --muted:#8b97b0;
     --r:20px;
@@ -92,16 +92,16 @@
     box-shadow:none;color:var(--text);backdrop-filter:blur(12px);
     padding:16px 26px;
   }
-  .btn-ghost:hover{border-color:rgba(99,164,255,.55);box-shadow:0 0 0 4px rgba(63,140,255,.08)}
+  .btn-ghost:hover{border-color:rgba(125,211,252,.55);box-shadow:0 0 0 4px rgba(56,189,248,.08)}
   /* ---------------- background field ---------------- */
   .bg-field{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden}
   .bg-field .halo{
     position:absolute;top:-20%;right:-10%;width:70vw;height:70vw;
-    background:radial-gradient(circle at 50% 50%, rgba(63,140,255,.28), rgba(63,140,255,0) 62%);
+    background:radial-gradient(circle at 50% 50%, rgba(56,189,248,.28), rgba(56,189,248,0) 62%);
     filter:blur(10px);
   }
   .bg-field .halo.b{top:auto;bottom:-30%;left:-20%;right:auto;width:60vw;height:60vw;
-    background:radial-gradient(circle at 50% 50%, rgba(37,84,214,.22), rgba(37,84,214,0) 62%)}
+    background:radial-gradient(circle at 50% 50%, rgba(14,165,233,.22), rgba(14,165,233,0) 62%)}
   .waves{position:absolute;top:0;left:-5%;width:120%;height:100%;opacity:.55;animation:drift 24s ease-in-out infinite alternate}
   @keyframes drift{from{transform:translate3d(-2%,0,0) scale(1.02)}to{transform:translate3d(3%,-2%,0) scale(1.08)}}
   /* ---------------- hero ---------------- */
@@ -117,9 +117,9 @@
   .video-wrap{width:100%;max-width:720px;margin:22px auto 0}
   .video-frame{
     position:relative;width:100%;aspect-ratio:16/9;
-    border-radius:18px;overflow:hidden;background:#0a0f1c;
+    border-radius:18px;overflow:hidden;background:#0a2740;
     border:1px solid var(--panel-brd);
-    box-shadow:0 0 60px -14px rgba(63,140,255,.4), 0 30px 70px -24px rgba(0,0,0,.7);
+    box-shadow:0 0 60px -14px rgba(56,189,248,.4), 0 30px 70px -24px rgba(0,0,0,.7);
   }
   .video-frame video#kPlayer{object-fit:cover;background:#000;cursor:pointer}
   .video-frame #kPlayer,
@@ -137,7 +137,7 @@
   .video-frame .v-play::before,
   .video-frame .v-play::after{
     content:"";position:absolute;inset:0;border-radius:50%;
-    border:2px solid rgba(99,164,255,.7);
+    border:2px solid rgba(125,211,252,.7);
     animation:playRing 2.4s ease-out infinite;
   }
   .video-frame .v-play::after{animation-delay:1.2s}
@@ -145,9 +145,9 @@
   .video-frame .v-play .core{
     position:relative;width:100%;height:100%;border-radius:50%;
     display:flex;align-items:center;justify-content:center;
-    background:linear-gradient(145deg,#7db4ff 0%,#3f8cff 45%,#1f4fd6 100%);
+    background:linear-gradient(145deg,#bae6fd 0%,#38bdf8 45%,#0284c7 100%);
     border:1.5px solid rgba(255,255,255,.55);
-    box-shadow:0 0 0 8px rgba(63,140,255,.22), 0 14px 44px -6px rgba(63,140,255,.75), inset 0 2px 0 rgba(255,255,255,.45);
+    box-shadow:0 0 0 8px rgba(56,189,248,.22), 0 14px 44px -6px rgba(56,189,248,.75), inset 0 2px 0 rgba(255,255,255,.45);
   }
   .video-frame .v-play svg{width:36px;height:36px;fill:#fff;margin-left:5px;filter:drop-shadow(0 2px 6px rgba(8,30,90,.5))}
   .video-frame.playing .v-play{opacity:0}
@@ -157,7 +157,7 @@
   }
   /* progress bar — faqat ko'rsatkich (sudrab bo'lmaydi) */
   .video-frame .v-bar{position:absolute;left:0;right:0;bottom:0;height:5px;background:rgba(255,255,255,.18);z-index:2;pointer-events:none}
-  .video-frame .v-bar-fill{height:100%;width:0;background:#f4633a;transition:width .15s linear}
+  .video-frame .v-bar-fill{height:100%;width:0;background:#7dd3fc;transition:width .15s linear}
   /* to'liq ekran tugmasi — pastki o'ng burchak */
   .video-frame .v-full{
     position:absolute;right:12px;bottom:14px;z-index:4;
@@ -227,8 +227,8 @@
     .q-cta .btn{font-size:10px}
   }
   .video-frame .v-placeholder{position:absolute;inset:0;z-index:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;padding-bottom:14%;
-    background:radial-gradient(circle at 50% 40%,rgba(63,140,255,.28),rgba(63,140,255,0) 60%),linear-gradient(160deg,#0e1a33,#0a1220);pointer-events:none;transition:opacity .3s ease}
-  .video-frame .v-placeholder span{font-family:"Archivo",sans-serif;font-weight:700;font-size:12px;letter-spacing:.2em;text-transform:uppercase;color:#5f7db3}
+    background:radial-gradient(circle at 50% 40%,rgba(56,189,248,.28),rgba(56,189,248,0) 60%),linear-gradient(160deg,#0f3050,#0a2238);pointer-events:none;transition:opacity .3s ease}
+  .video-frame .v-placeholder span{font-family:"Archivo",sans-serif;font-weight:700;font-size:12px;letter-spacing:.2em;text-transform:uppercase;color:#8cc4e6}
   .video-frame.started .v-placeholder{opacity:0}
   .hero{position:relative;z-index:2;padding:70px 0 90px}
   .reveal{opacity:0;transform:translateY(28px);transition:opacity .7s ease,transform .7s ease}
@@ -247,9 +247,9 @@
   <svg class="waves" viewBox="0 0 1440 900" preserveAspectRatio="none" fill="none" xmlns="http://www.w3.org/2000/svg">
     <defs>
       <linearGradient id="wg" x1="0" y1="0" x2="1" y2="0">
-        <stop offset="0" stop-color="#3f8cff" stop-opacity="0"/>
-        <stop offset="0.5" stop-color="#63a4ff" stop-opacity="0.9"/>
-        <stop offset="1" stop-color="#3f8cff" stop-opacity="0"/>
+        <stop offset="0" stop-color="#38bdf8" stop-opacity="0"/>
+        <stop offset="0.5" stop-color="#7dd3fc" stop-opacity="0.9"/>
+        <stop offset="1" stop-color="#38bdf8" stop-opacity="0"/>
       </linearGradient>
       <filter id="wb"><feGaussianBlur stdDeviation="2"/></filter>
     </defs>
@@ -434,7 +434,7 @@
           size: { width: '100%', height: '100%' },
           behavior: { keyboard: false, localStorage: false, playsInline: true, autoPlay: false, preload: 'metadata' },
           ui: { controls: false, mainPlayButton: false },
-          theme: { colors: { primary: '#f4633a' } }
+          theme: { colors: { primary: '#7dd3fc' } }
         }).then(player => {
           const E = player.Events;
           player.on(E.Ready, e => { duration = (e.data && e.data.duration) || duration; });
