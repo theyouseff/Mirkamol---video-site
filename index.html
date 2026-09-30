@@ -1,0 +1,491 @@
+<!doctype html>
+<html lang="uz">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>LOR mutaxassisi — Burun, quloq va tomoq davolash</title>
+<meta name="description" content="LOR (otolaringolog) mutaxassisi: operatsiyasiz burun bitishi va surunkali tomoq muammolaridan xalos bo'lish yo'lini videodan bilib oling." />
+
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700;800;900&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet" />
+
+<style>
+  :root{
+    --bg:#05070e;
+    --bg-2:#0a0f1c;
+    --panel:rgba(255,255,255,.045);
+    --panel-brd:rgba(255,255,255,.09);
+    --blue:#3f8cff;
+    --blue-2:#63a4ff;
+    --blue-deep:#1f4fd6;
+    --glow:rgba(63,140,255,.55);
+    --text:#eef3fd;
+    --muted:#8b97b0;
+    --r:20px;
+  }
+
+  *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+  html{scroll-behavior:smooth}
+  body{
+    background:var(--bg);
+    color:var(--text);
+    font-family:"Manrope",-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+    font-size:17px;line-height:1.6;
+    -webkit-font-smoothing:antialiased;
+    overflow-x:hidden;
+  }
+  img{max-width:100%;display:block}
+  a{color:inherit;text-decoration:none}
+
+  h1,h2,h3,h4{font-family:"Archivo",sans-serif;font-weight:800;line-height:1.02;letter-spacing:-.01em;text-transform:uppercase}
+
+  .wrap{max-width:1240px;margin:0 auto;padding:0 32px}
+
+  .eyebrow{
+    font-family:"Archivo",sans-serif;font-size:12.5px;font-weight:700;
+    letter-spacing:.28em;text-transform:uppercase;color:var(--blue-2);
+  }
+
+  .warnbar{
+    display:flex;align-items:center;justify-content:center;
+    width:fit-content;max-width:100%;margin:0 auto;overflow:hidden;
+    padding:8px 22px;border-radius:999px;
+    border:1.5px solid rgba(233,78,63,.8);
+    background:linear-gradient(180deg,rgba(233,78,63,.22),rgba(233,78,63,.05) 55%,rgba(233,78,63,.16));
+    box-shadow:0 0 32px -8px rgba(233,78,63,.5), inset 0 0 24px -8px rgba(233,78,63,.4);
+    animation:warnpulse 2.6s ease-in-out infinite;
+  }
+  .warnbar > .wb-inner{
+    display:inline-flex;align-items:center;gap:11px;
+    white-space:nowrap;transform-origin:center;
+  }
+  .wb-ico{flex:none;width:20px;height:20px;color:#fff;filter:drop-shadow(0 0 5px rgba(233,78,63,.7))}
+  .wb-ico svg{width:100%;height:100%;display:block}
+  .wb-div{flex:none;width:1.5px;height:16px;background:rgba(255,255,255,.4)}
+  .wb-txt{
+    font-family:"Archivo",sans-serif;font-weight:800;color:#fff;
+    font-size:clamp(6.5px,1.85vw,12px);letter-spacing:.07em;text-transform:uppercase;
+  }
+  .wb-txt b{color:#ff5140;font-weight:800}
+  @media(min-width:721px){ .wb-txt{letter-spacing:.11em} }
+  @keyframes warnpulse{
+    0%,100%{border-color:rgba(233,78,63,.55);box-shadow:0 0 34px -8px rgba(233,78,63,.4), inset 0 0 26px -8px rgba(233,78,63,.38)}
+    50%{border-color:rgba(233,78,63,1);box-shadow:0 0 56px -4px rgba(233,78,63,.65), inset 0 0 28px -6px rgba(233,78,63,.5)}
+  }
+  .btn{
+    display:inline-flex;align-items:center;gap:14px;
+    padding:17px 20px 17px 30px;border-radius:999px;
+    font-family:"Archivo",sans-serif;font-weight:700;font-size:15px;letter-spacing:.02em;text-transform:uppercase;
+    background:linear-gradient(135deg,var(--blue-2),var(--blue-deep));
+    color:#fff;border:none;cursor:pointer;
+    box-shadow:0 18px 50px -12px var(--glow), inset 0 1px 0 rgba(255,255,255,.35);
+    transition:transform .25s ease, box-shadow .25s ease;
+  }
+  .btn:hover{transform:translateY(-3px);box-shadow:0 26px 60px -12px var(--glow), inset 0 1px 0 rgba(255,255,255,.35)}
+  .btn .plus{
+    width:34px;height:34px;flex:none;border-radius:50%;
+    background:rgba(255,255,255,.18);display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:600;
+  }
+  .btn-ghost{
+    background:var(--panel);border:1px solid var(--panel-brd);
+    box-shadow:none;color:var(--text);backdrop-filter:blur(12px);
+    padding:16px 26px;
+  }
+  .btn-ghost:hover{border-color:rgba(99,164,255,.55);box-shadow:0 0 0 4px rgba(63,140,255,.08)}
+  /* ---------------- background field ---------------- */
+  .bg-field{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden}
+  .bg-field .halo{
+    position:absolute;top:-20%;right:-10%;width:70vw;height:70vw;
+    background:radial-gradient(circle at 50% 50%, rgba(63,140,255,.28), rgba(63,140,255,0) 62%);
+    filter:blur(10px);
+  }
+  .bg-field .halo.b{top:auto;bottom:-30%;left:-20%;right:auto;width:60vw;height:60vw;
+    background:radial-gradient(circle at 50% 50%, rgba(37,84,214,.22), rgba(37,84,214,0) 62%)}
+  .waves{position:absolute;top:0;left:-5%;width:120%;height:100%;opacity:.55;animation:drift 24s ease-in-out infinite alternate}
+  @keyframes drift{from{transform:translate3d(-2%,0,0) scale(1.02)}to{transform:translate3d(3%,-2%,0) scale(1.08)}}
+  /* ---------------- hero ---------------- */
+    .hero-grid{display:grid;grid-template-columns:1fr;gap:0}
+  .hero-text,.hero-visual{min-width:0}
+  .hero-text{text-align:center}
+  .hero h1{font-size:clamp(1.4rem,4.6vw,2.9rem);font-weight:900;line-height:1.16;margin:24px 0 22px}
+  .hero h1 .ln{display:block;white-space:nowrap}
+  .hero h1 .b{color:var(--blue)}
+  .hero .lead{color:var(--muted);font-size:clamp(13px,3.4vw,18px);max-width:34em;margin:0 auto}
+
+  /* video */
+  .video-wrap{width:100%;max-width:720px;margin:22px auto 0}
+  .video-frame{
+    position:relative;width:100%;aspect-ratio:16/9;
+    border-radius:18px;overflow:hidden;background:#0a0f1c;
+    border:1px solid var(--panel-brd);
+    box-shadow:0 0 60px -14px rgba(63,140,255,.4), 0 30px 70px -24px rgba(0,0,0,.7);
+  }
+  .video-frame video#kPlayer{object-fit:cover;background:#000;cursor:pointer}
+  .video-frame #kPlayer,
+  .video-frame iframe{position:absolute;inset:0;width:100%;height:100%;border:0;display:block}
+  /* oblojka — video birinchi marta boshlanmaguncha turadi (bosish iframe'ga o'tadi) */
+  .video-frame .v-cover{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:1;pointer-events:none;transition:opacity .3s ease}
+  .video-frame.started .v-cover{opacity:0}
+  /* markaziy play tugma — faqat ko'rinish (pointer-events:none: bosish iframe'ga o'tadi), video to'xtaganda ko'rinadi */
+  .video-frame .v-play{
+    position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);
+    width:92px;height:92px;z-index:3;pointer-events:none;
+    display:flex;align-items:center;justify-content:center;
+    transition:opacity .2s;
+  }
+  .video-frame .v-play::before,
+  .video-frame .v-play::after{
+    content:"";position:absolute;inset:0;border-radius:50%;
+    border:2px solid rgba(99,164,255,.7);
+    animation:playRing 2.4s ease-out infinite;
+  }
+  .video-frame .v-play::after{animation-delay:1.2s}
+  @keyframes playRing{0%{transform:scale(1);opacity:.85}100%{transform:scale(1.75);opacity:0}}
+  .video-frame .v-play .core{
+    position:relative;width:100%;height:100%;border-radius:50%;
+    display:flex;align-items:center;justify-content:center;
+    background:linear-gradient(145deg,#7db4ff 0%,#3f8cff 45%,#1f4fd6 100%);
+    border:1.5px solid rgba(255,255,255,.55);
+    box-shadow:0 0 0 8px rgba(63,140,255,.22), 0 14px 44px -6px rgba(63,140,255,.75), inset 0 2px 0 rgba(255,255,255,.45);
+  }
+  .video-frame .v-play svg{width:36px;height:36px;fill:#fff;margin-left:5px;filter:drop-shadow(0 2px 6px rgba(8,30,90,.5))}
+  .video-frame.playing .v-play{opacity:0}
+  @media(max-width:640px){
+    .video-frame .v-play{width:68px;height:68px}
+    .video-frame .v-play svg{width:27px;height:27px;margin-left:4px}
+  }
+  /* progress bar — faqat ko'rsatkich (sudrab bo'lmaydi) */
+  .video-frame .v-bar{position:absolute;left:0;right:0;bottom:0;height:5px;background:rgba(255,255,255,.18);z-index:2;pointer-events:none}
+  .video-frame .v-bar-fill{height:100%;width:0;background:#f4633a;transition:width .15s linear}
+  /* to'liq ekran tugmasi — pastki o'ng burchak */
+  .video-frame .v-full{
+    position:absolute;right:12px;bottom:14px;z-index:4;
+    width:36px;height:36px;border:0;border-radius:10px;cursor:pointer;
+    display:flex;align-items:center;justify-content:center;color:#fff;
+    background:rgba(0,0,0,.42);backdrop-filter:blur(4px);
+    box-shadow:0 2px 10px -2px rgba(0,0,0,.5);
+    transition:background .2s, transform .2s;
+  }
+  .video-frame .v-full:hover{background:rgba(0,0,0,.7);transform:scale(1.06)}
+  .video-frame .v-full svg{width:19px;height:19px}
+  @media(max-width:640px){ .video-frame .v-full{width:32px;height:32px;right:9px;bottom:11px} .video-frame .v-full svg{width:17px;height:17px} }
+
+  /* "kattalashtirilgan" rejim */
+  .video-frame.fs,
+  .video-frame:fullscreen,
+  .video-frame:-webkit-full-screen{
+    width:100%;height:100%;max-width:none;margin:0;
+    border:0;border-radius:0;background-color:#000;aspect-ratio:auto;
+  }
+  .video-frame.fs{position:fixed;inset:0;z-index:99999}
+  /* telefon tik holatda — video burilmaydi, to'g'ri turadi: ekran kengligi bo'ylab 16:9, markazda */
+  @media (hover:none) and (pointer:coarse) and (orientation:portrait){
+    .video-frame.fs #kPlayer,   .video-frame.fs .v-cover,
+    .video-frame:fullscreen #kPlayer,   .video-frame:fullscreen .v-cover,
+    .video-frame:-webkit-full-screen #kPlayer,   .video-frame:-webkit-full-screen .v-cover{
+      inset:auto;top:50%;left:0;
+      width:100%;height:56.25vw;
+      transform:translateY(-50%);
+    }
+  }
+  /* telefon yotiq holatda — YouTube kabi: yon qora polosalar o'rniga video ekranni to'ldiradi (16:9 nisbati buzilmaydi, ortiqcha qismi kesiladi) */
+  @media (hover:none) and (pointer:coarse) and (orientation:landscape){
+    .video-frame.fs #kPlayer,
+    .video-frame:fullscreen #kPlayer,
+    .video-frame:-webkit-full-screen #kPlayer{
+      inset:auto;top:50%;left:50%;
+      width:max(100vw,177.78vh);height:max(56.25vw,100vh);
+      width:max(100vw,177.78dvh);height:max(56.25vw,100dvh);
+      transform:translate(-50%,-50%);
+    }
+  }
+  .video-frame .v-close{
+    position:absolute;top:14px;right:14px;z-index:6;display:none;
+    width:38px;height:38px;border:0;border-radius:50%;cursor:pointer;color:#fff;
+    align-items:center;justify-content:center;background:rgba(0,0,0,.5);backdrop-filter:blur(4px);
+  }
+  .video-frame .v-close svg{width:18px;height:18px}
+  .video-frame.fs .v-close,
+  .video-frame:fullscreen .v-close,
+  .video-frame:-webkit-full-screen .v-close{display:flex}
+  .video-frame.fs .v-full,
+  .video-frame:fullscreen .v-full,
+  .video-frame:-webkit-full-screen .v-full{display:none}
+  body.v-fs-lock{overflow:hidden}
+  .q-cta{margin-top:22px;display:flex;justify-content:center}
+  .q-cta .btn{width:auto;max-width:100%;justify-content:center;white-space:nowrap;font-size:14px;padding:14px 18px 14px 26px}
+  .q-cta .btn .plus{width:28px;height:28px;font-size:17px}
+  @media(max-width:640px){
+    .qualify{padding:56px 0 64px}
+    .q-card{padding:22px 18px}
+    .q-card p{font-size:15px}
+    .q-cta .btn{font-size:11px;letter-spacing:.02em;gap:9px;padding:12px 14px 12px 18px}
+    .q-cta .btn .plus{width:22px;height:22px;font-size:14px}
+  }
+  @media(max-width:360px){
+    .q-cta .btn{font-size:10px}
+  }
+  .video-frame .v-placeholder{position:absolute;inset:0;z-index:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;padding-bottom:14%;
+    background:radial-gradient(circle at 50% 40%,rgba(63,140,255,.28),rgba(63,140,255,0) 60%),linear-gradient(160deg,#0e1a33,#0a1220);pointer-events:none;transition:opacity .3s ease}
+  .video-frame .v-placeholder span{font-family:"Archivo",sans-serif;font-weight:700;font-size:12px;letter-spacing:.2em;text-transform:uppercase;color:#5f7db3}
+  .video-frame.started .v-placeholder{opacity:0}
+  .hero{position:relative;z-index:2;padding:70px 0 90px}
+  .reveal{opacity:0;transform:translateY(28px);transition:opacity .7s ease,transform .7s ease}
+  .reveal.in{opacity:1;transform:none}
+  @media(max-width:640px){ .wrap{padding:0 20px} .hero{padding:40px 0 70px}
+    .q-cta .btn{font-size:11px;letter-spacing:.02em;gap:9px;padding:12px 14px 12px 18px}
+    .q-cta .btn .plus{width:22px;height:22px;font-size:14px} }
+
+</style>
+</head>
+<body>
+
+<div class="bg-field" aria-hidden="true">
+  <div class="halo"></div>
+  <div class="halo b"></div>
+  <svg class="waves" viewBox="0 0 1440 900" preserveAspectRatio="none" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+      <linearGradient id="wg" x1="0" y1="0" x2="1" y2="0">
+        <stop offset="0" stop-color="#3f8cff" stop-opacity="0"/>
+        <stop offset="0.5" stop-color="#63a4ff" stop-opacity="0.9"/>
+        <stop offset="1" stop-color="#3f8cff" stop-opacity="0"/>
+      </linearGradient>
+      <filter id="wb"><feGaussianBlur stdDeviation="2"/></filter>
+    </defs>
+    <g stroke="url(#wg)" stroke-width="1.4" filter="url(#wb)">
+      <path d="M-100 260C260 120 520 420 780 300 1040 180 1300 380 1560 260"/>
+      <path d="M-100 360C260 220 520 520 780 400 1040 280 1300 480 1560 360"/>
+      <path d="M-100 460C260 320 520 620 780 500 1040 380 1300 580 1560 460"/>
+      <path d="M-100 560C260 420 520 720 780 600 1040 480 1300 680 1560 560"/>
+      <path d="M-100 660C260 520 520 820 780 700 1040 580 1300 780 1560 660"/>
+      <path d="M-100 180C260 60 520 320 780 220 1040 120 1300 300 1560 200"/>
+    </g>
+  </svg>
+</div>
+
+<a id="top"></a>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="wrap hero-grid">
+    <div class="hero-text reveal">
+      <div class="warnbar">
+        <span class="wb-inner">
+          <span class="wb-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0Z"/><path d="M12 9v4"/><path d="M12 17h.01"/></svg></span>
+          <span class="wb-div"></span>
+          <span class="wb-txt">Agar burningiz tez-tez bitib qolsa, videoni <b>oxirigacha ko'ring!</b></span>
+        </span>
+      </div>
+      <!-- 4U formulasi: Useful (foyda) · Urgent (muddat) · Unique (noyoblik) · Ultra-specific (aniqlik) -->
+      <h1><span class="ln"><span class="b">Operatsiyasiz</span> va <span class="b">14 kun ichida</span></span><span class="ln">burun bitishi hamda <span class="b">surunkali tomoq</span></span><span class="ln">og'rig'idan xalos bo'lish yo'lini bilib oling</span></h1>
+      <p class="lead">Hatto yillar davomida dori ichib natija ko'rmagan<br>yoki operatsiya qilishni tavsiya etishgan bo'lsa ham.</p>
+    </div>
+
+    <div class="video-wrap reveal">
+      <div class="video-frame" id="videoFrame">
+        <div id="kPlayer"></div>
+        <div class="v-placeholder"><span>Video shu yerda</span></div>
+        <div class="v-play" aria-hidden="true"><span class="core">
+          <svg viewBox="0 0 24 24"><path d="M7 4.5v15a1 1 0 0 0 1.5.86l12.5-7.5a1 1 0 0 0 0-1.72L8.5 3.64A1 1 0 0 0 7 4.5z"/></svg>
+        </span></div>
+        <button class="v-full" id="vFull" type="button" aria-label="Kattalashtirish">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><path d="M8 3H5a2 2 0 0 0-2 2v3M21 8V5a2 2 0 0 0-2-2h-3M3 16v3a2 2 0 0 0 2 2h3M16 21h3a2 2 0 0 0 2-2v-3"/></svg>
+        </button>
+        <button class="v-close" id="vClose" type="button" aria-label="Yopish">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg>
+        </button>
+        <div class="v-bar"><div class="v-bar-fill" id="vFill"></div></div>
+      </div>
+    </div>
+
+    <!-- Video REVEAL_AT soniyaga yetganda faqat shu tugma chiqadi -->
+    <div id="qualify" hidden>
+      <div class="q-cta reveal">
+        <a href="#" id="ctaLink" target="_blank" rel="noopener" class="btn">Konsultatsiyaga ro'yxatdan o'tish <span class="plus">+</span></a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<script>
+  const reveals = document.querySelectorAll('.reveal');
+  const io = new IntersectionObserver(es => {
+    es.forEach(e => { if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); } });
+  }, { threshold: 0.12 });
+  reveals.forEach((el, i) => { el.style.transitionDelay = (i % 3) * 0.09 + 's'; io.observe(el); });
+  // Zaxira: agar kuzatuvchi ishlamasa, 700 ms dan keyin baribir ko'rsatiladi
+  // (yashirin #qualify blokidagilar bundan mustasno — ular video 10:28 da ochiladi)
+  setTimeout(() => reveals.forEach(el => { if (!el.closest('#qualify')) el.classList.add('in'); }), 700);
+
+  // Ogohlantirish matnini bitta qatorda box ichiga sig'dirish
+  (function () {
+    const box = document.querySelector('.warnbar');
+    const txt = box && box.firstElementChild;
+    if (!txt) return;
+    function fit() {
+      txt.style.transform = 'scale(1)';
+      const avail = box.clientWidth - 30;          // ichki padding hisobga olinadi
+      const w = txt.scrollWidth;
+      const s = w > 0 ? Math.min(1, avail / w) : 1;
+      txt.style.transform = 'scale(' + s.toFixed(3) + ')';
+      box.style.height = Math.ceil(txt.getBoundingClientRect().height) + 16 + 'px';
+    }
+    fit();
+    addEventListener('resize', fit);
+    if (document.fonts && document.fonts.ready) document.fonts.ready.then(fit);
+  })();
+
+  // Sarlavha: har bir qator bitta qatorda joyni to'ldirsin (kerak bo'lsa kichraytiriladi)
+  (function () {
+    const h1 = document.querySelector('.hero h1');
+    if (!h1) return;
+    const lines = h1.querySelectorAll('.ln');
+    function fit() {
+      h1.style.fontSize = '';
+      const base = parseFloat(getComputedStyle(h1).fontSize);
+      const avail = h1.parentElement.clientWidth;
+      let widest = 0;
+      lines.forEach(l => { widest = Math.max(widest, l.scrollWidth); });
+      if (widest > avail) h1.style.fontSize = (base * avail / widest * 0.985).toFixed(2) + 'px';
+    }
+    fit();
+    addEventListener('resize', fit);
+    if (document.fonts && document.fonts.ready) document.fonts.ready.then(fit);
+  })();
+
+  // Video: Kinescope pleyeri (IFrame API) — boshqaruv paneli yo'q, faqat ingichka progress bar.
+  // O'tkazib bo'lmaydi. 10:28 da yoki tugagach "qualify" (CTA tugma) ochiladi.
+  (function () {
+    const frame = document.getElementById('videoFrame');
+    const holder = document.getElementById('kPlayer');
+    const vFill = document.getElementById('vFill');
+    const qualify = document.getElementById('qualify');
+    if (!frame || !holder) return;
+
+    // ⬇️ SHU YERGA O'Z VIDEONGIZNI QO'YING (Kinescope):
+    const VIDEO_URL = '';   // masalan: 'https://kinescope.io/embed/XXXXXXXX'
+    const HLS_URL   = '';   // masalan: 'https://kinescope.io/XXXXXXXX/master.m3u8' (iPhone uchun)
+    const CTA_URL   = '#';  // tugma havolasi
+    const REVEAL_AT = 628;  // tugma chiqadigan soniya (10:28)
+    document.getElementById('ctaLink').href = CTA_URL;
+
+    let fired = false;
+    const fireOnce = () => {
+      if (fired) return;
+      fired = true;
+      if (!qualify || !qualify.hidden) return;
+      qualify.hidden = false;
+      requestAnimationFrame(() => {
+        qualify.querySelectorAll('.reveal').forEach(el => el.classList.add('in'));
+      });
+    };
+
+    // Umumiy holat: progress bar, 10:28 da CTA, oldinga o'tkazishni bloklash
+    let maxT = 0, duration = 0;
+    const onPlay  = () => frame.classList.add('playing', 'started');
+    const onPause = () => frame.classList.remove('playing');
+    const onEnded = () => { frame.classList.remove('playing'); fireOnce(); };
+    // ct ni qabul qiladi; oldinga sakralgan bo'lsa false qaytaradi (chaqiruvchi orqaga qaytaradi)
+    const onTime = ct => {
+      if (ct > maxT + 1.5) return false;
+      if (ct > maxT) maxT = ct;
+      if (duration) vFill.style.width = Math.min(100, ct / duration * 100).toFixed(2) + '%';
+      if (ct >= REVEAL_AT) fireOnce();
+      return true;
+    };
+
+    // iPhone: brauzer iframe'ni butun ekranga chiqara olmaydi. Shuning uchun iPhone'da
+    // videoni sahifaning o'z <video> elementida (Kinescope HLS) o'ynatamiz — kattalashtirish
+    // tugmasi Apple'ning haqiqiy to'liq ekran pleyerini ochadi (manzil paneli ko'rinmaydi).
+    const probe = document.createElement('video');
+    const IOS_NATIVE = !(frame.requestFullscreen || frame.webkitRequestFullscreen)
+      && typeof probe.webkitEnterFullscreen === 'function'
+      && !!probe.canPlayType('application/vnd.apple.mpegurl');
+    let vid = null;
+
+    if (!VIDEO_URL) {
+      // video hali qo'yilmagan — faqat joy (placeholder) ko'rinadi
+    } else if (IOS_NATIVE && HLS_URL) {
+      vid = document.createElement('video');
+      vid.id = 'kPlayer';
+      vid.setAttribute('playsinline', '');
+      vid.setAttribute('webkit-playsinline', '');
+      vid.playsInline = true;
+      vid.preload = 'metadata';
+      vid.src = HLS_URL;
+      holder.replaceWith(vid);
+
+      vid.addEventListener('click', () => { vid.paused ? vid.play() : vid.pause(); });
+      vid.addEventListener('play', onPlay);
+      vid.addEventListener('playing', onPlay);
+      vid.addEventListener('pause', onPause);
+      vid.addEventListener('ended', onEnded);
+      vid.addEventListener('loadedmetadata', () => { duration = vid.duration || duration; });
+      vid.addEventListener('durationchange', () => { duration = vid.duration || duration; });
+      const guard = () => { if (!onTime(vid.currentTime || 0)) vid.currentTime = maxT; };
+      vid.addEventListener('timeupdate', guard);
+      vid.addEventListener('seeking', guard);   // Apple pleyerining polzunogi bilan oldinga sakrashni to'sish
+    } else {
+      // Kompyuter / Android: Kinescope pleyeri — boshqaruvsiz, klaviatura o'chirilgan
+      window.onKinescopeIframeAPIReady = function (factory) {
+        factory.create('kPlayer', {
+          url: VIDEO_URL,
+          size: { width: '100%', height: '100%' },
+          behavior: { keyboard: false, localStorage: false, playsInline: true, autoPlay: false, preload: 'metadata' },
+          ui: { controls: false, mainPlayButton: false },
+          theme: { colors: { primary: '#f4633a' } }
+        }).then(player => {
+          const E = player.Events;
+          player.on(E.Ready, e => { duration = (e.data && e.data.duration) || duration; });
+          player.on(E.DurationChange, e => { duration = e.data.duration || duration; });
+          player.on(E.TimeUpdate, e => { if (!onTime(e.data.currentTime || 0)) player.seekTo(maxT); });
+          player.on(E.Play, onPlay);
+          player.on(E.Playing, onPlay);
+          player.on(E.Pause, onPause);
+          player.on(E.Ended, onEnded);
+        });
+      };
+      const s = document.createElement('script');
+      s.src = 'https://player.kinescope.io/latest/iframe.player.js';
+      s.onerror = () => {   // zaxira: oddiy embed
+        holder.innerHTML = '<iframe src="' + VIDEO_URL + '" allow="autoplay; fullscreen; picture-in-picture; encrypted-media" allowfullscreen></iframe>';
+      };
+      document.head.appendChild(s);
+    }
+
+    // "Kattalashtirish" — qurilmaning BUTUN ekraniga (brauzer paneli ham yopiladi)
+    const fakeOn = () => { frame.classList.add('fs'); document.body.classList.add('v-fs-lock'); };
+    const fakeOff = () => { frame.classList.remove('fs'); document.body.classList.remove('v-fs-lock'); };
+    const realFS = () => document.fullscreenElement || document.webkitFullscreenElement;
+    const iosFS = () => {                                  // iPhone: Apple'ning to'liq ekran pleyeri
+      try { vid.webkitEnterFullscreen(); return; } catch (e) {}
+      if (vid.readyState >= 1) { fakeOn(); return; }      // boshqa sabab bilan ochilmadi — zaxira
+      // metadata hali yuklanmagan — yuklangach ochamiz
+      vid.play().catch(() => {});
+      vid.addEventListener('loadedmetadata', () => { try { vid.webkitEnterFullscreen(); } catch (e) { fakeOn(); } }, { once: true });
+    };
+    const enterFS = () => {
+      if (vid)                                { iosFS(); }
+      else if (frame.requestFullscreen)       { frame.requestFullscreen().catch(fakeOn); }
+      else if (frame.webkitRequestFullscreen) { frame.webkitRequestFullscreen(); }
+      else { fakeOn(); }
+    };
+    const exitFS = () => {
+      if (realFS()) { (document.exitFullscreen || document.webkitExitFullscreen).call(document); }
+      fakeOff();
+    };
+    document.addEventListener('fullscreenchange', () => {
+      const on = document.fullscreenElement === frame;
+      frame.classList.toggle('fs', on);
+      document.body.classList.toggle('v-fs-lock', on);
+    });
+    const vFull = document.getElementById('vFull');
+    const vClose = document.getElementById('vClose');
+    if (vFull) vFull.addEventListener('click', e => { e.stopPropagation(); enterFS(); });
+    if (vClose) vClose.addEventListener('click', e => { e.stopPropagation(); exitFS(); });
+    addEventListener('keydown', e => { if (e.key === 'Escape') exitFS(); });
+  })();
+</script>
+</body>
+</html>
