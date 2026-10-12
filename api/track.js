@@ -8,7 +8,7 @@ const flag = v => (v === true ? true : null);
 
 module.exports = async (req, res) => {
   if (req.method !== 'POST') return res.status(405).end();
-  const url = process.env.SUPABASE_URL;
+  const url = (process.env.SUPABASE_URL || '').trim().replace(/\/+$/, '').replace(/\/rest\/v1$/, '');
   const key = process.env.SUPABASE_SERVICE_KEY;
   if (!url || !key) return res.status(500).end();
 

@@ -15,7 +15,7 @@ module.exports = async (req, res) => {
   }
 
   const pass = process.env.STATS_PASSWORD;
-  const url = process.env.SUPABASE_URL;
+  const url = (process.env.SUPABASE_URL || '').trim().replace(/\/+$/, '').replace(/\/rest\/v1$/, '');
   const key = process.env.SUPABASE_SERVICE_KEY;
   if (!pass || !url || !key) return res.status(500).json({ error: 'Vercel da SUPABASE_URL, SUPABASE_SERVICE_KEY, STATS_PASSWORD kiritilmagan' });
 
