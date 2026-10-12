@@ -303,7 +303,7 @@
     <!-- Video REVEAL_AT soniyaga yetganda faqat shu tugma chiqadi -->
     <div id="qualify" hidden>
       <div class="q-cta reveal">
-        <a href="#" id="ctaLink" target="_blank" rel="noopener" class="btn">Konsultatsiyaga ro'yxatdan o'tish <span class="plus">+</span></a>
+        <a href="#" id="ctaLink" target="_blank" rel="noopener" class="btn">Darslikni olish <span class="plus">+</span></a>
       </div>
     </div>
   </div>
@@ -316,7 +316,7 @@
   }, { threshold: 0.12 });
   reveals.forEach((el, i) => { el.style.transitionDelay = (i % 3) * 0.09 + 's'; io.observe(el); });
   // Zaxira: agar kuzatuvchi ishlamasa, 700 ms dan keyin baribir ko'rsatiladi
-  // (yashirin #qualify blokidagilar bundan mustasno — ular video 10:28 da ochiladi)
+  // (yashirin #qualify blokidagilar bundan mustasno — ular video 26:53 da ochiladi)
   setTimeout(() => reveals.forEach(el => { if (!el.closest('#qualify')) el.classList.add('in'); }), 700);
 
   // Ogohlantirish matnini bitta qatorda box ichiga sig'dirish
@@ -384,7 +384,7 @@
   Track.send({});
 
   // Video: Kinescope pleyeri (IFrame API) — boshqaruv paneli yo'q, faqat ingichka progress bar.
-  // O'tkazib bo'lmaydi. 10:28 da yoki tugagach "qualify" (CTA tugma) ochiladi.
+  // O'tkazib bo'lmaydi. 26:53 da yoki tugagach "qualify" (CTA tugma) ochiladi.
   (function () {
     const frame = document.getElementById('videoFrame');
     const holder = document.getElementById('kPlayer');
@@ -396,8 +396,8 @@
     const VIDEO_URL = '';   // masalan: 'https://kinescope.io/embed/XXXXXXXX'
     const HLS_URL   = '';   // masalan: 'https://kinescope.io/XXXXXXXX/master.m3u8' (iPhone uchun)
     const MP4_URL   = '';   // Kinescope o'rniga oddiy mp4 (masalan Cloudflare R2): 'https://video.sayt.uz/video.mp4'
-    const CTA_URL   = '#';  // tugma havolasi
-    const REVEAL_AT = 628;  // tugma chiqadigan soniya (10:28)
+    const CTA_URL   = 'https://tripwire-sayt.vercel.app/#dars';  // tugma havolasi
+    const REVEAL_AT = 1613; // tugma chiqadigan soniya (26:53)
     document.getElementById('ctaLink').href = CTA_URL;
 
     let fired = false;
@@ -412,7 +412,7 @@
       });
     };
 
-    // Umumiy holat: progress bar, 10:28 da CTA, oldinga o'tkazishni bloklash
+    // Umumiy holat: progress bar, 26:53 da CTA, oldinga o'tkazishni bloklash
     let maxT = 0, duration = 0;
     let tStarted = false;
     const onPlay  = () => {
