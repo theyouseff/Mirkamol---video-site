@@ -1,0 +1,250 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="robots" content="noindex,nofollow" />
+<title>Статистика</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@600;700;800&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<style>
+  :root{
+    --bg:#061a2b; --panel:rgba(255,255,255,.045); --brd:rgba(255,255,255,.1);
+    --blue:#38bdf8; --blue-2:#7dd3fc; --deep:#0284c7;
+    --text:#eef6fd; --muted:#8fa6bd; --bad:#f4745f; --good:#4ade80;
+    color-scheme:dark;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:var(--bg);color:var(--text);font-family:"Manrope",system-ui,sans-serif;font-size:15px;line-height:1.5;
+    background-image:radial-gradient(60vw 40vw at 90% -10%,rgba(56,189,248,.18),transparent 70%)}
+  .wrap{max-width:1100px;margin:0 auto;padding:24px 16px 64px}
+  h1,h2{font-family:"Archivo",sans-serif;text-transform:uppercase;letter-spacing:.01em}
+  h1{font-size:1.5rem;font-weight:800}
+  h2{font-size:.95rem;font-weight:700;color:var(--blue-2);margin-bottom:14px;letter-spacing:.08em}
+  .top{display:flex;flex-wrap:wrap;gap:16px;align-items:center;justify-content:space-between;margin-bottom:24px}
+  .badge{display:inline-block;margin-left:10px;padding:3px 10px;border-radius:999px;font-size:11px;font-weight:700;letter-spacing:.1em;
+    background:rgba(244,116,95,.15);color:var(--bad);border:1px solid rgba(244,116,95,.5);vertical-align:middle}
+  .filters{display:flex;flex-wrap:wrap;gap:10px;align-items:end}
+  label{display:flex;flex-direction:column;gap:4px;font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+  input,select{background:var(--panel);border:1px solid var(--brd);color:var(--text);border-radius:10px;padding:9px 12px;font:inherit;font-size:14px;min-width:0}
+  input:focus,select:focus,button:focus-visible{outline:2px solid var(--blue);outline-offset:1px}
+  button{cursor:pointer;border:0;border-radius:10px;padding:10px 18px;font:inherit;font-weight:700;color:#fff;
+    background:linear-gradient(135deg,var(--blue),var(--deep))}
+  .panel{background:var(--panel);border:1px solid var(--brd);border-radius:16px;padding:20px;margin-bottom:16px;min-width:0}
+  .kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin-bottom:16px}
+  .kpi{background:var(--panel);border:1px solid var(--brd);border-radius:14px;padding:16px}
+  .kpi .n{font-family:"Archivo",sans-serif;font-weight:800;font-size:1.7rem;line-height:1.1;font-variant-numeric:tabular-nums}
+  .kpi .l{font-size:12px;color:var(--muted);margin-top:6px}
+  .kpi .s{font-size:12px;color:var(--blue-2);margin-top:2px;font-variant-numeric:tabular-nums}
+  .funnel{display:grid;gap:10px}
+  .f-row{display:grid;grid-template-columns:minmax(120px,190px) 1fr 110px;gap:12px;align-items:center}
+  .f-bar{height:26px;border-radius:7px;background:rgba(255,255,255,.06);overflow:hidden}
+  .f-bar i{display:block;height:100%;background:linear-gradient(90deg,var(--deep),var(--blue));border-radius:7px;min-width:2px}
+  .f-val{text-align:right;font-variant-numeric:tabular-nums;font-weight:700}
+  .f-val small{color:var(--muted);font-weight:500;margin-left:4px}
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+  svg{width:100%;height:auto;display:block}
+  .axis{fill:var(--muted);font-size:11px;font-family:"Manrope",sans-serif}
+  .scroll{overflow-x:auto}
+  table{width:100%;border-collapse:collapse;font-variant-numeric:tabular-nums;font-size:14px}
+  th,td{text-align:right;padding:9px 10px;border-bottom:1px solid var(--brd);white-space:nowrap}
+  th:first-child,td:first-child{text-align:left}
+  th{font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);font-weight:700}
+  .hint{color:var(--muted);font-size:13px;margin-top:10px}
+  #login{max-width:360px;margin:18vh auto 0}
+  #login .panel{display:grid;gap:14px}
+  .err{color:var(--bad);font-size:13px;min-height:1.2em}
+  [hidden]{display:none!important}
+  @media(max-width:760px){.grid2{grid-template-columns:1fr}.f-row{grid-template-columns:1fr 90px}.f-row .f-bar{grid-column:1/-1;order:3}}
+</style>
+</head>
+<body>
+
+<div id="login" class="wrap" hidden>
+  <form class="panel" id="loginForm">
+    <h1>Статистика</h1>
+    <label>Пароль<input type="password" id="pw" autocomplete="current-password" required /></label>
+    <div class="err" id="loginErr"></div>
+    <button type="submit">Войти</button>
+  </form>
+</div>
+
+<div id="app" class="wrap" hidden>
+  <div class="top">
+    <h1>Статистика видео <span class="badge" id="demoBadge" hidden>Демо-данные</span></h1>
+    <div class="filters">
+      <label>С<input type="date" id="from" /></label>
+      <label>По<input type="date" id="to" /></label>
+      <label>Источник<select id="src"><option value="">Все</option></select></label>
+      <button type="button" id="apply">Показать</button>
+    </div>
+  </div>
+  <div class="err" id="appErr"></div>
+
+  <div class="kpis" id="kpis"></div>
+
+  <div class="panel">
+    <h2>Воронка просмотра</h2>
+    <div class="funnel" id="funnel"></div>
+    <p class="hint" id="funnelHint"></p>
+  </div>
+
+  <div class="grid2">
+    <div class="panel">
+      <h2>Сколько людей ещё смотрят</h2>
+      <div id="retention"></div>
+      <p class="hint">Доля нажавших Play, которые досмотрели до начала каждой минуты (по оси: номер минуты).</p>
+    </div>
+    <div class="panel">
+      <h2>На какой минуте ушли</h2>
+      <div id="leftIn"></div>
+      <p class="hint">Сколько человек остановилось на каждой минуте и не вернулось.</p>
+    </div>
+  </div>
+
+  <div class="panel">
+    <h2>По дням</h2>
+    <div id="daily" style="max-width:100%"></div>
+  </div>
+
+  <div class="panel"><h2>По источникам</h2><div class="scroll" id="bySource"></div></div>
+  <div class="grid2">
+    <div class="panel"><h2>По устройствам</h2><div class="scroll" id="byDevice"></div></div>
+    <div class="panel"><h2>По странам</h2><div class="scroll" id="byCountry"></div></div>
+  </div>
+  <p class="hint">Метки в ссылках: <code>?src=instagram</code>, <code>?src=tg_bot</code> (или <code>utm_source</code>). Время указано по самому дальнему моменту, до которого человек досмотрел.</p>
+</div>
+
+<script>
+(function () {
+  var $ = function (id) { return document.getElementById(id); };
+  var demo = /[?&]demo=1/.test(location.search);
+  var pass = '';
+  try { pass = sessionStorage.getItem('sp') || ''; } catch (e) {}
+
+  var mmss = function (s) { s = Math.round(s || 0); return Math.floor(s / 60) + ':' + String(s % 60).padStart(2, '0'); };
+  var pct = function (a, b) { return b ? (a / b * 100).toFixed(1).replace(/\.0$/, '') + '%' : '—'; };
+  var esc = function (s) { return String(s).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); };
+
+  function load() {
+    var p = new URLSearchParams();
+    if (demo) p.set('demo', '1');
+    if ($('from').value) p.set('from', $('from').value);
+    if ($('to').value) p.set('to', $('to').value);
+    if ($('src').value) p.set('source', $('src').value);
+    $('appErr').textContent = 'Загрузка…';
+    fetch('/api/stats?' + p, { headers: { 'x-stats-password': pass } })
+      .then(function (r) { return r.json().then(function (j) { return { ok: r.ok, status: r.status, j: j }; }); })
+      .then(function (x) {
+        if (x.status === 401) { showLogin('Неверный пароль'); return; }
+        if (!x.ok) { $('appErr').textContent = x.j.error || 'Ошибка'; return; }
+        $('appErr').textContent = '';
+        showApp(); render(x.j);
+      })
+      .catch(function () { $('appErr').textContent = 'Не удалось загрузить данные'; showApp(); });
+  }
+
+  function showLogin(msg) { $('app').hidden = true; $('login').hidden = false; $('loginErr').textContent = msg || ''; }
+  function showApp() { $('login').hidden = true; $('app').hidden = false; }
+
+  function render(d) {
+    $('demoBadge').hidden = !d.demo;
+    var t = d.totals;
+    if (d.from && !$('from').value) { $('from').value = d.from; $('to').value = d.to; }
+    var cur = $('src').value;
+    $('src').innerHTML = '<option value="">Все</option>' + (d.sources || []).map(function (s) { return '<option>' + esc(s) + '</option>'; }).join('');
+    $('src').value = cur;
+
+    var kp = [
+      [t.sessions, 'Заходов на сайт', t.visitors + ' уникальных'],
+      [t.started, 'Нажали Play', pct(t.started, t.sessions) + ' от заходов'],
+      [t.completed, 'Досмотрели до конца', pct(t.completed, t.started) + ' от нажавших'],
+      [mmss(t.avgWatch), 'Среднее время просмотра', 'медиана ' + mmss(t.medianWatch)],
+      [pct(t.avgPct * 100, 100), 'Средний % просмотра', t.duration ? 'видео ' + mmss(t.duration) : ''],
+      [t.reachedCta, 'Дошли до кнопки', pct(t.reachedCta, t.started) + ' от нажавших'],
+      [t.ctaClicks, 'Нажали на кнопку', pct(t.ctaClicks, t.sessions) + ' от заходов']
+    ];
+    $('kpis').innerHTML = kp.map(function (k) {
+      return '<div class="kpi"><div class="n">' + k[0] + '</div><div class="l">' + k[1] + '</div><div class="s">' + k[2] + '</div></div>';
+    }).join('');
+
+    var f = d.funnel.slice(0, 6), top = f[0].n || 1;
+    $('funnel').innerHTML = f.map(function (r, i) {
+      return '<div class="f-row"><span>' + r.label + '</span><div class="f-bar"><i style="width:' + (r.n / top * 100).toFixed(1) + '%"></i></div>' +
+        '<span class="f-val">' + r.n + '<small>' + pct(r.n, top) + '</small></span></div>';
+    }).join('');
+    $('funnelHint').textContent = t.duration ? '' : 'Длина видео появится после первого просмотра.';
+
+    var n = d.minutes.leftIn.length;
+    $('retention').innerHTML = lineChart(d.minutes.retention.map(function (v) { return v * 100; }), n);
+    $('leftIn').innerHTML = barChart(d.minutes.leftIn, function (i) { return i; }, 'мин');
+    $('daily').innerHTML = barChart(d.daily.map(function (x) { return x.sessions; }), function (i) { return d.daily[i].date.slice(5); }, '', d.daily.map(function (x) { return x.started; }), true);
+
+    $('bySource').innerHTML = table(d.bySource, 'Источник');
+    $('byDevice').innerHTML = table(d.byDevice, 'Устройство');
+    $('byCountry').innerHTML = table(d.byCountry, 'Страна');
+  }
+
+  function table(rows, h) {
+    if (!rows.length) return '<p class="hint">Пока нет данных.</p>';
+    return '<table><thead><tr><th>' + h + '</th><th>Заходов</th><th>Play</th><th>До конца</th><th>Ср. время</th><th>Клики</th></tr></thead><tbody>' +
+      rows.map(function (r) {
+        return '<tr><td>' + esc(r.key) + '</td><td>' + r.sessions + '</td><td>' + r.started + ' <small>(' + pct(r.started, r.sessions) + ')</small></td><td>' +
+          r.completed + ' <small>(' + pct(r.completed, r.started) + ')</small></td><td>' + mmss(r.avgWatch) + '</td><td>' + r.cta + '</td></tr>';
+      }).join('') + '</tbody></table>';
+  }
+
+  var W = 560, H = 230, L = 36, B = 26, T = 10, R = 8;
+
+  function lineChart(vals, n) {
+    var x = function (i) { return L + (n > 1 ? i / (n - 1) : 0) * (W - L - R); };
+    var y = function (v) { return T + (1 - v / 100) * (H - T - B); };
+    var s = '<svg viewBox="0 0 ' + W + ' ' + H + '" role="img" aria-label="Удержание по минутам">';
+    [0, 25, 50, 75, 100].forEach(function (g) {
+      s += '<line x1="' + L + '" x2="' + (W - R) + '" y1="' + y(g) + '" y2="' + y(g) + '" stroke="rgba(255,255,255,.08)"/>' +
+        '<text class="axis" x="' + (L - 6) + '" y="' + (y(g) + 4) + '" text-anchor="end">' + g + '%</text>';
+    });
+    var pts = vals.map(function (v, i) { return x(i) + ',' + y(v); });
+    s += '<polygon points="' + x(0) + ',' + y(0) + ' ' + pts.join(' ') + ' ' + x(vals.length - 1) + ',' + y(0) + '" fill="rgba(56,189,248,.18)"/>';
+    s += '<polyline points="' + pts.join(' ') + '" fill="none" stroke="#38bdf8" stroke-width="2.5" stroke-linejoin="round"/>';
+    var step = Math.ceil(n / 12);
+    vals.forEach(function (v, i) {
+      if (i % step === 0) s += '<text class="axis" x="' + x(i) + '" y="' + (H - 8) + '" text-anchor="middle">' + i + '</text>';
+    });
+    s += '<circle cx="' + x(vals.length - 1) + '" cy="' + y(vals[vals.length - 1]) + '" r="4" fill="#38bdf8"/>';
+    return s + '</svg>';
+  }
+
+  function barChart(vals, labelFn, unit, second, wide) {
+    var W = wide ? 1060 : 560, n = vals.length, max = Math.max.apply(null, vals.concat([1]));
+    var iw = W - L - R, bw = iw / n, step = Math.ceil(n / 12);
+    var y = function (v) { return T + (1 - v / max) * (H - T - B); };
+    var s = '<svg viewBox="0 0 ' + W + ' ' + H + '" role="img">';
+    [0, 0.5, 1].forEach(function (g) {
+      var v = Math.round(max * g);
+      s += '<line x1="' + L + '" x2="' + (W - R) + '" y1="' + y(v) + '" y2="' + y(v) + '" stroke="rgba(255,255,255,.08)"/>' +
+        '<text class="axis" x="' + (L - 6) + '" y="' + (y(v) + 4) + '" text-anchor="end">' + v + '</text>';
+    });
+    vals.forEach(function (v, i) {
+      var bx = L + i * bw + bw * 0.12, w = bw * 0.76;
+      s += '<rect x="' + bx + '" y="' + y(v) + '" width="' + w + '" height="' + (y(0) - y(v)) + '" rx="3" fill="' + (second ? 'rgba(56,189,248,.35)' : '#38bdf8') + '"><title>' + labelFn(i) + (unit ? ' ' + unit : '') + ': ' + v + '</title></rect>';
+      if (second) s += '<rect x="' + bx + '" y="' + y(second[i]) + '" width="' + w + '" height="' + (y(0) - y(second[i])) + '" rx="3" fill="#38bdf8"/>';
+      if (i % step === 0) s += '<text class="axis" x="' + (bx + w / 2) + '" y="' + (H - 8) + '" text-anchor="middle">' + labelFn(i) + '</text>';
+    });
+    return s + '</svg>' + (second ? '<p class="hint">Светлый столбик: заходы, яркий: нажали Play.</p>' : '');
+  }
+
+  $('loginForm').addEventListener('submit', function (e) {
+    e.preventDefault();
+    pass = $('pw').value;
+    try { sessionStorage.setItem('sp', pass); } catch (x) {}
+    load();
+  });
+  $('apply').addEventListener('click', load);
+
+  if (demo || pass) load(); else showLogin('');
+})();
+</script>
+</body>
+</html>
