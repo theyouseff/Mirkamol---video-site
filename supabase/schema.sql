@@ -56,3 +56,8 @@ end;
 $$;
 
 revoke all on function public.track_session from public, anon, authenticated;
+
+-- Serverdagi (service_role) kalit jadval va funksiyadan foydalana olsin
+-- ("Automatically expose new tables" o'chirilgan bo'lsa ham ishlaydi).
+grant select, insert, update on public.sessions to service_role;
+grant execute on function public.track_session to service_role;
