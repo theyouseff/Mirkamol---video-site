@@ -156,6 +156,39 @@
     .video-frame .v-play{width:68px;height:68px}
     .video-frame .v-play svg{width:27px;height:27px;margin-left:4px}
   }
+
+  /* bir marta bosish: pauza/davom, ikki marta bosish: to'liq ekran (video boshlangandan keyin yoqiladi) */
+  .video-frame .v-tap{position:absolute;inset:0;z-index:2;pointer-events:none;touch-action:manipulation;-webkit-tap-highlight-color:transparent}
+  .video-frame.started .v-tap{pointer-events:auto;cursor:pointer}
+  .video-frame .v-hint{
+    position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);z-index:3;pointer-events:none;
+    display:flex;flex-direction:column;align-items:center;gap:10px;
+    opacity:0;visibility:hidden;transition:opacity .35s ease, visibility 0s linear .35s;
+  }
+  .video-frame .v-hint.show{opacity:1;visibility:visible;transition:opacity .35s ease}
+  .v-hint .tap{position:relative;width:96px;height:96px;display:flex;align-items:center;justify-content:center}
+  .v-hint .tap::before,.v-hint .tap::after{
+    content:"";position:absolute;inset:16px;border-radius:50%;
+    border:2.5px solid rgba(125,211,252,.95);opacity:0;
+  }
+  .v-hint.show .tap::before{animation:hintRing 1.7s ease-out 3}
+  .v-hint.show .tap::after{animation:hintRing 1.7s ease-out .32s 3}
+  .v-hint .tap svg{position:relative;width:46px;height:46px;fill:#fff;filter:drop-shadow(0 3px 10px rgba(0,0,0,.65))}
+  .v-hint.show .tap svg{animation:hintHand 1.7s ease-in-out 3}
+  .v-hint .lbl{
+    padding:8px 16px;border-radius:999px;text-align:center;
+    background:rgba(6,26,43,.72);border:1px solid rgba(125,211,252,.55);backdrop-filter:blur(6px);
+    font-family:"Archivo",sans-serif;font-weight:800;font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:#fff;line-height:1.3;
+  }
+  .v-hint .lbl small{display:block;font-weight:700;font-size:10.5px;letter-spacing:.14em;color:#7dd3fc}
+  @keyframes hintRing{0%{transform:scale(.5);opacity:.95}65%,100%{transform:scale(1.55);opacity:0}}
+  @keyframes hintHand{0%,100%{transform:scale(1)}6%{transform:scale(.82)}14%{transform:scale(1)}22%{transform:scale(.82)}30%{transform:scale(1)}}
+  .video-frame.fs .v-hint,.video-frame:fullscreen .v-hint,.video-frame:-webkit-full-screen .v-hint{display:none}
+  @media (prefers-reduced-motion:reduce){
+    .v-hint .tap::before,.v-hint .tap::after{display:none}
+    .v-hint.show .tap svg{animation:none}
+  }
+  @media(max-width:640px){ .v-hint .lbl{font-size:11px;padding:7px 13px} .v-hint .tap{width:84px;height:84px} }
   /* progress bar — faqat ko'rsatkich (sudrab bo'lmaydi) */
   .video-frame .v-bar{position:absolute;left:0;right:0;bottom:0;height:5px;background:rgba(255,255,255,.18);z-index:2;pointer-events:none}
   .video-frame .v-bar-fill{height:100%;width:0;background:#7dd3fc;transition:width .15s linear}
@@ -296,6 +329,11 @@
         <button class="v-close" id="vClose" type="button" aria-label="Yopish">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg>
         </button>
+        <div class="v-tap" id="vTap"></div>
+        <div class="v-hint" id="vHint" aria-hidden="true">
+          <div class="tap"><svg viewBox="0 0 24 24"><path d="M9 11.24V7.5a2.5 2.5 0 0 1 5 0v3.74c1.21-.81 2-2.18 2-3.74C16 5.01 13.99 3 11.5 3S7 5.01 7 7.5c0 1.56.79 2.93 2 3.74zm9.84 4.63l-4.54-2.26c-.17-.07-.35-.11-.54-.11H13v-6c0-.83-.67-1.5-1.5-1.5S10 6.67 10 7.5v10.74l-3.43-.72c-.08-.01-.15-.03-.24-.03-.31 0-.59.13-.79.33l-.79.8 4.94 4.94c.37.37.88.58 1.41.58h6.67c.98 0 1.81-.7 1.97-1.67l.76-4.54c.03-.08.04-.16.04-.23 0-.67-.37-1.25-.9-1.55z"/></svg></div>
+          <div class="lbl">Ikki marta bosing<small>to'liq ekran</small></div>
+        </div>
         <div class="v-bar"><div class="v-bar-fill" id="vFill"></div></div>
       </div>
     </div>
@@ -415,8 +453,10 @@
     // Umumiy holat: progress bar, 26:53 da CTA, oldinga o'tkazishni bloklash
     let maxT = 0, duration = 0;
     let tStarted = false;
+    let hintArm = null;   // ikki marta bosish ko'rsatmasi (pastda belgilanadi)
     const onPlay  = () => {
       frame.classList.add('playing', 'started');
+      if (hintArm) hintArm();
       if (!tStarted) { tStarted = true; Track.send({ started: true, duration: Math.floor(duration) }); }
     };
     const onPause = () => frame.classList.remove('playing');
@@ -450,6 +490,7 @@
       && typeof probe.webkitEnterFullscreen === 'function'
       && !!probe.canPlayType('application/vnd.apple.mpegurl');
     let vid = null;
+    let kp = null;        // Kinescope player (API orqali pauza/davom uchun)
 
     if (!VIDEO_URL && !MP4_URL) {
       // video hali qo'yilmagan — faqat joy (placeholder) ko'rinadi
@@ -483,6 +524,7 @@
           ui: { controls: false, mainPlayButton: false },
           theme: { colors: { primary: '#7dd3fc' } }
         }).then(player => {
+          kp = player;
           const E = player.Events;
           player.on(E.Ready, e => { duration = (e.data && e.data.duration) || duration; });
           player.on(E.DurationChange, e => { duration = e.data.duration || duration; });
@@ -532,6 +574,39 @@
     if (vFull) vFull.addEventListener('click', e => { e.stopPropagation(); enterFS(); });
     if (vClose) vClose.addEventListener('click', e => { e.stopPropagation(); exitFS(); });
     addEventListener('keydown', e => { if (e.key === 'Escape') exitFS(); });
+
+    // Bir marta bosish: pauza / davom. Ikki marta bosish: to'liq ekranga o'tish (yoki undan chiqish).
+    const tapEl = document.getElementById('vTap');
+    const hintEl = document.getElementById('vHint');
+    let tapTimer = null, hintDone = false, hintTimer = null;
+    const hideHint = () => { hintDone = true; if (hintEl) hintEl.classList.remove('show'); };
+    hintArm = () => {
+      if (hintDone || hintTimer || !hintEl) return;
+      hintTimer = setTimeout(() => {
+        if (hintDone) return;
+        hintEl.classList.add('show');
+        setTimeout(hideHint, 5600);
+      }, 1500);
+    };
+    const togglePlay = () => {
+      const playing = frame.classList.contains('playing');
+      try {
+        let r;
+        if (vid) r = playing ? vid.pause() : vid.play();
+        else if (kp) r = playing ? kp.pause() : kp.play();
+        if (r && r.catch) r.catch(() => {});
+      } catch (e) {}
+    };
+    if (tapEl) tapEl.addEventListener('click', e => {
+      e.stopPropagation();
+      hideHint();
+      if (tapTimer) {                       // ikkinchi bosish — to'liq ekran
+        clearTimeout(tapTimer); tapTimer = null;
+        if (frame.classList.contains('fs') || realFS() === frame) exitFS(); else enterFS();
+        return;
+      }
+      tapTimer = setTimeout(() => { tapTimer = null; togglePlay(); }, 280);
+    });
   })();
 </script>
 </body>
