@@ -260,9 +260,10 @@
   @media(max-width:360px){
     .q-cta .btn{font-size:10px}
   }
-  .video-frame .v-placeholder{position:absolute;inset:0;z-index:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;padding-bottom:14%;
-    background:radial-gradient(circle at 50% 40%,rgba(56,189,248,.28),rgba(56,189,248,0) 60%),linear-gradient(160deg,#0f3050,#0a2238);pointer-events:none;transition:opacity .3s ease}
-  .video-frame .v-placeholder span{font-family:"Archivo",sans-serif;font-weight:700;font-size:12px;letter-spacing:.2em;text-transform:uppercase;color:#8cc4e6}
+  .video-frame .v-placeholder{
+    position:absolute;inset:0;z-index:1;pointer-events:none;transition:opacity .3s ease;
+    background:linear-gradient(rgba(6,26,43,.2),rgba(6,26,43,.2)),url(cover.jpg) center/cover no-repeat,#0a2740;
+  }
   .video-frame.started .v-placeholder{opacity:0}
   .hero{position:relative;z-index:2;padding:70px 0 90px}
   .reveal{opacity:0;transform:translateY(28px);transition:opacity .7s ease,transform .7s ease}
@@ -319,7 +320,7 @@
     <div class="video-wrap reveal">
       <div class="video-frame" id="videoFrame">
         <div id="kPlayer"></div>
-        <div class="v-placeholder"><span>Video shu yerda</span></div>
+        <div class="v-placeholder"></div>
         <div class="v-play" aria-hidden="true"><span class="core">
           <svg viewBox="0 0 24 24"><path d="M7 4.5v15a1 1 0 0 0 1.5.86l12.5-7.5a1 1 0 0 0 0-1.72L8.5 3.64A1 1 0 0 0 7 4.5z"/></svg>
         </span></div>
