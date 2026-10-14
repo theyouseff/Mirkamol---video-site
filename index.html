@@ -409,6 +409,7 @@
       source: q.get('utm_source') || q.get('src') || q.get('start') || '',
       medium: q.get('utm_medium') || '',
       campaign: q.get('utm_campaign') || '',
+      uid: q.get('uid') || '',
       ref,
       device: /Mobi|Android|iPhone|iPad/i.test(navigator.userAgent) ? 'mobile' : 'desktop'
     };

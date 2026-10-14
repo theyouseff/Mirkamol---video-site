@@ -40,6 +40,9 @@ module.exports = async (req, res) => {
     p_duration: int(b.duration, 86400),
   };
 
+  // uid (Telegram bot orqali kelgan tomoshabin ID si) faqat bor bo'lsa yuboriladi
+  if (/^[A-Za-z0-9_-]{1,64}$/.test(b.uid || '')) args.p_uid = b.uid;
+
   try {
     const r = await fetch(url + '/rest/v1/rpc/track_session', {
       method: 'POST',
