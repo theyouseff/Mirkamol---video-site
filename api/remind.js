@@ -26,7 +26,7 @@ module.exports = async (req, res) => {
   const opts = {
     afterSec: num(process.env.REMIND_AFTER_SEC, 240),
     maxAgeSec: num(process.env.REMIND_MAX_AGE_SEC, 3600),
-    maxPct: num(process.env.REMIND_MAX_PCT, 95),
+    maxPct: num(process.env.REMIND_MAX_PCT, 70),
   };
   const H = { apikey: key, Authorization: 'Bearer ' + key };
 

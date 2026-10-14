@@ -79,7 +79,7 @@ SQL Editor → `supabase/migration-reminders.sql` ni to'liq qo'yib **Run**.
 | `TELEGRAM_BOT_TOKEN` | BotFather → /mybots → bot → API Token (faqat shu yerga qo'yiladi, hech kimga yozilmaydi) |
 | `REMINDERS_ENABLED` | `1` bo'lsa yuboradi. Bo'sh bo'lsa faqat "sinov rejimi" (hech narsa yubormaydi) |
 | `REMIND_AFTER_SEC` | ixtiyoriy, standart 240 (chiqib ketgandan keyin necha soniyada) |
-| `REMIND_MAX_PCT` | ixtiyoriy, standart 95 (shundan ko'p ko'rganlarga yuborilmaydi) |
+| `REMIND_MAX_PCT` | ixtiyoriy, standart 70 (shundan ko'p ko'rganlarga yuborilmaydi) |
 | `REMIND_MAX_AGE_SEC` | ixtiyoriy, standart 3600 (juda eski chiqib ketganlarga yuborilmaydi) |
 
 Qo'shgach **Redeploy**.
@@ -88,11 +88,13 @@ Qo'shgach **Redeploy**.
 `https://mirkamol-lor-jarroh.vercel.app/api/remind?key=<WATCH_API_KEY>&dry=1`
 Javobda `due` ro'yxati: hozir eslatma yuboriladigan odamlar (haqiqatda yuborilmaydi).
 
-## 4. Taymer (cron-job.org)
-Yangi job: URL `https://mirkamol-lor-jarroh.vercel.app/api/remind?key=<WATCH_API_KEY>`, har **1 daqiqada**.
+## 4. Taymer (Supabase, bitta SQL)
+SQL Editor → `supabase/cron-remind.sql` ni qo'yib, `PASTE_WATCH_API_KEY_HERE` o'rniga o'z kalitingizni yozing → **Run**.
+Tekshirish: `select * from cron.job;`. To'xtatish: `select cron.unschedule('remind-every-minute');`
+(Zaxira yo'l: cron-job.org da har 1 daqiqada `https://mirkamol-lor-jarroh.vercel.app/api/remind?key=<WATCH_API_KEY>`.)
 
 ## Qoidalar
 - Faqat `?src=tg_bot` (1-kunlik tugma) orqali kirgan va Play bosgan odamga
-- Oxirigacha ko'rmagan va 95% dan kam ko'rgan
+- Oxirigacha ko'rmagan va 70% gacha (shu jumladan) ko'rgan; 70% dan ko'p ko'rganlarga yuborilmaydi
 - Har odamga umr bo'yi **bir marta** (jadval `reminders`)
 - Bot bloklangan bo'lsa xato yoziladi, qayta urinilmaydi
