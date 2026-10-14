@@ -43,6 +43,8 @@
   .f-bar i{display:block;height:100%;background:linear-gradient(90deg,var(--deep),var(--blue));border-radius:7px;min-width:2px}
   .f-val{text-align:right;font-variant-numeric:tabular-nums;font-weight:700}
   .f-val small{color:var(--muted);font-weight:500;margin-left:4px}
+  .cta-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px}
+  .cta-grid .kpi{background:rgba(56,189,248,.07);border-color:rgba(125,211,252,.28)}
   .grid2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
   svg{width:100%;height:auto;display:block}
   .axis{fill:var(--muted);font-size:11px;font-family:"Manrope",sans-serif}
@@ -88,6 +90,12 @@
     <h2>Воронка просмотра</h2>
     <div class="funnel" id="funnel"></div>
     <p class="hint" id="funnelHint"></p>
+  </div>
+
+  <div class="panel">
+    <h2>Кнопка «Darslikni olish»</h2>
+    <div class="cta-grid" id="ctaGrid"></div>
+    <p class="hint">Кнопка появляется ближе к концу видео. «Дошли до кнопки» — те, кто досмотрел до этого момента.</p>
   </div>
 
   <div class="grid2">
@@ -175,6 +183,15 @@
         '<span class="f-val">' + r.n + '<small>' + pct(r.n, top) + '</small></span></div>';
     }).join('');
     $('funnelHint').textContent = t.duration ? '' : 'Длина видео появится после первого просмотра.';
+
+    $('ctaGrid').innerHTML = [
+      [t.reachedCta, 'Дошли до кнопки', pct(t.reachedCta, t.started) + ' от нажавших Play'],
+      [t.ctaClicks, 'Нажали на кнопку', pct(t.ctaClicks, t.reachedCta) + ' от дошедших до кнопки'],
+      [pct(t.ctaClicks, t.sessions), 'Заходы → клик', t.ctaClicks + ' из ' + t.sessions + ' заходов'],
+      [pct(t.ctaClicks, t.started), 'Просмотр → клик', t.ctaClicks + ' из ' + t.started + ' нажавших Play']
+    ].map(function (k) {
+      return '<div class="kpi"><div class="n">' + k[0] + '</div><div class="l">' + k[1] + '</div><div class="s">' + k[2] + '</div></div>';
+    }).join('');
 
     var n = d.minutes.leftIn.length;
     $('retention').innerHTML = lineChart(d.minutes.retention.map(function (v) { return v * 100; }), n);
