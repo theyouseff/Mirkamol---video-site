@@ -116,7 +116,7 @@
     <div id="daily" style="max-width:100%"></div>
   </div>
 
-  <div class="panel"><h2>По источникам</h2><div class="scroll" id="bySource"></div></div>
+  <div class="panel"><h2>По источникам</h2><div class="scroll" id="bySource"></div><p class="hint">Нажмите на источник в таблице, чтобы увидеть всю статистику только по нему.</p></div>
   <div class="grid2">
     <div class="panel"><h2>По устройствам</h2><div class="scroll" id="byDevice"></div></div>
     <div class="panel"><h2>По странам</h2><div class="scroll" id="byCountry"></div></div>
@@ -161,8 +161,11 @@
     var t = d.totals;
     if (d.from && !$('from').value) { $('from').value = d.from; $('to').value = d.to; }
     var cur = $('src').value;
-    $('src').innerHTML = '<option value="">Все</option>' + (d.sources || []).map(function (s) { return '<option>' + esc(s) + '</option>'; }).join('');
+    $('src').innerHTML = '<option value="">Все источники</option>' +
+      (d.sources || []).map(function (s) { return '<option value="' + esc(s) + '">' + esc(s) + '</option>'; }).join('') +
+      (d.hasNone ? '<option value="__none__">(без метки)</option>' : '');
     $('src').value = cur;
+    if ($('src').value !== cur) $('src').value = '';
 
     var kp = [
       [t.sessions, 'Заходов на сайт', t.visitors + ' уникальных'],
@@ -198,16 +201,17 @@
     $('leftIn').innerHTML = barChart(d.minutes.leftIn, function (i) { return i; }, 'мин');
     $('daily').innerHTML = barChart(d.daily.map(function (x) { return x.sessions; }), function (i) { return d.daily[i].date.slice(5); }, '', d.daily.map(function (x) { return x.started; }), true);
 
-    $('bySource').innerHTML = table(d.bySource, 'Источник');
+    $('bySource').innerHTML = table(d.bySource, 'Источник', true);
     $('byDevice').innerHTML = table(d.byDevice, 'Устройство');
     $('byCountry').innerHTML = table(d.byCountry, 'Страна');
   }
 
-  function table(rows, h) {
+  function table(rows, h, clickable) {
     if (!rows.length) return '<p class="hint">Пока нет данных.</p>';
     return '<table><thead><tr><th>' + h + '</th><th>Заходов</th><th>Play</th><th>До конца</th><th>Ср. время</th><th>Клики</th></tr></thead><tbody>' +
       rows.map(function (r) {
-        return '<tr><td>' + esc(r.key) + '</td><td>' + r.sessions + '</td><td>' + r.started + ' <small>(' + pct(r.started, r.sessions) + ')</small></td><td>' +
+        var ds = clickable ? ' data-src="' + esc(r.key === '(нет данных)' ? '__none__' : r.key) + '" style="cursor:pointer"' : '';
+        return '<tr' + ds + '><td>' + esc(r.key) + '</td><td>' + r.sessions + '</td><td>' + r.started + ' <small>(' + pct(r.started, r.sessions) + ')</small></td><td>' +
           r.completed + ' <small>(' + pct(r.completed, r.started) + ')</small></td><td>' + mmss(r.avgWatch) + '</td><td>' + r.cta + '</td></tr>';
       }).join('') + '</tbody></table>';
   }
@@ -259,6 +263,16 @@
     load();
   });
   $('apply').addEventListener('click', load);
+  // фильтры применяются сразу, без кнопки
+  ['src', 'from', 'to'].forEach(function (id) { $(id).addEventListener('change', load); });
+  // клик по источнику в таблице — показать только его
+  $('bySource').addEventListener('click', function (e) {
+    var tr = e.target.closest('tr[data-src]');
+    if (!tr) return;
+    $('src').value = tr.getAttribute('data-src');
+    if ($('src').value !== tr.getAttribute('data-src')) return;
+    load();
+  });
 
   if (demo || pass) load(); else showLogin('');
 })();
