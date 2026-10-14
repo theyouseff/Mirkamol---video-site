@@ -18,6 +18,7 @@ module.exports = async (req, res) => {
       demo: true,
       sources: [...new Set(all.map(r => r.source).filter(Boolean))].sort(),
       hasNone: all.some(r => !r.source),
+      reminders: { sent: 40, ok: 38, failed: 2 },
       ...aggregate(rows),
     });
   }
@@ -66,5 +67,18 @@ module.exports = async (req, res) => {
 
   const sources = [...new Set(srcRows.map(r => r.source).filter(Boolean))].sort();
   const hasNone = srcRows.some(r => !r.source);
-  res.status(200).json({ from, to: toDay, sources, hasNone, ...aggregate(rows) });
+  // eslatmalar (jadval hali yaratilmagan bo'lsa null)
+  let reminders = null;
+  try {
+    const rr = await fetch(`${url}/rest/v1/reminders?select=result&sent_at=gte.${from}&sent_at=lt.${to}&limit=10000`, {
+      headers: { apikey: key, Authorization: 'Bearer ' + key },
+    });
+    if (rr.ok) {
+      const list = await rr.json();
+      const ok = list.filter(x => x.result === 'ok').length;
+      reminders = { sent: list.length, ok, failed: list.filter(x => /^fail/.test(x.result || '')).length };
+    }
+  } catch (e) { reminders = null; }
+
+  res.status(200).json({ from, to: toDay, sources, hasNone, reminders, ...aggregate(rows) });
 };

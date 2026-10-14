@@ -98,6 +98,12 @@
     <p class="hint">Кнопка появляется ближе к концу видео. «Дошли до кнопки» — те, кто досмотрел до этого момента.</p>
   </div>
 
+  <div class="panel" id="remPanel" hidden>
+    <h2>Напоминание тем, кто ушёл</h2>
+    <div class="cta-grid" id="remGrid"></div>
+    <p class="hint">Отправляется один раз через ~4 минуты после ухода из видео. «Вернулись» — заходы по ссылке из напоминания.</p>
+  </div>
+
   <div class="grid2">
     <div class="panel">
       <h2>Сколько людей ещё смотрят</h2>
@@ -195,6 +201,19 @@
     ].map(function (k) {
       return '<div class="kpi"><div class="n">' + k[0] + '</div><div class="l">' + k[1] + '</div><div class="s">' + k[2] + '</div></div>';
     }).join('');
+
+    var rp = $('remPanel'), rem = d.reminders;
+    if (rem && rem.sent > 0 && !$('src').value) {
+      var g = (d.bySource || []).filter(function (x) { return x.key === 'tg_bot_reminder'; })[0] || { sessions: 0, avgWatch: 0, completed: 0 };
+      $('remGrid').innerHTML = [
+        [rem.ok, 'Напоминаний отправлено', rem.failed ? rem.failed + ' не доставлено (бот заблокирован и т.п.)' : 'все доставлены'],
+        [g.sessions, 'Вернулись по напоминанию', pct(g.sessions, rem.ok) + ' от отправленных'],
+        [mmss(g.avgWatch), 'Среднее время после возврата', 'досмотрели: ' + g.completed],
+      ].map(function (k) {
+        return '<div class="kpi"><div class="n">' + k[0] + '</div><div class="l">' + k[1] + '</div><div class="s">' + k[2] + '</div></div>';
+      }).join('');
+      rp.hidden = false;
+    } else { rp.hidden = true; }
 
     var n = d.minutes.leftIn.length;
     $('retention').innerHTML = lineChart(d.minutes.retention.map(function (v) { return v * 100; }), n);
