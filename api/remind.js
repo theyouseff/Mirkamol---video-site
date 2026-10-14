@@ -1,6 +1,6 @@
 // GET /api/remind?key=<WATCH_API_KEY>[&dry=1]
 // Tashqi taymer (cron-job.org) har daqiqada chaqiradi. Videoni ko'rib, chiqib ketganlarga
-// Telegram orqali BIR MARTA eslatma yuboradi. Yuborish faqat REMINDERS_ENABLED=1 bo'lsa ishlaydi.
+// Telegram orqali BIR MARTA eslatma yuboradi. Token qo'yilmasa yoki REMINDERS_ENABLED=0 bo'lsa faqat sinov rejimi.
 const crypto = require('crypto');
 const { pickDue, REMINDER_TEXT } = require('../lib/remind');
 
@@ -18,9 +18,10 @@ module.exports = async (req, res) => {
   const given = req.headers['x-api-key'] || q.key || '';
   if (!crypto.timingSafeEqual(sha(given), sha(secret))) return res.status(401).json({ error: 'unauthorized' });
 
-  const enabled = process.env.REMINDERS_ENABLED === '1';
-  const dry = q.dry === '1' || !enabled;
+  // TELEGRAM_BOT_TOKEN qo'yilgan bo'lsa eslatma o'zi yoqiladi. O'chirish uchun: REMINDERS_ENABLED=0
   const token = process.env.TELEGRAM_BOT_TOKEN;
+  const enabled = !!token && process.env.REMINDERS_ENABLED !== '0';
+  const dry = q.dry === '1' || !enabled;
   const tgBase = (process.env.TELEGRAM_API_BASE || 'https://api.telegram.org').replace(/\/+$/, '');
   const site = (process.env.SITE_URL || 'https://mirkamol-lor-jarroh.vercel.app').replace(/\/+$/, '');
   const opts = {
