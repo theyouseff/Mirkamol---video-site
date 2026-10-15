@@ -6,6 +6,9 @@
 <title>LOR mutaxassisi — Burun, quloq va tomoq davolash</title>
 <meta name="description" content="30 daqiqada peshona bo'shlig'i drenajiga oid 3 ta anatomik tuzilmani va peshona cho'ntagini “Building Block” usulida KT'da to'g'ri tahlil qilishni o'rganing." />
 
+<link rel="preconnect" href="https://kinescope.io" crossorigin />
+<link rel="preconnect" href="https://player.kinescope.io" crossorigin />
+<link rel="dns-prefetch" href="https://kinescope.io" />
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700;800;900&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet" />
@@ -127,7 +130,7 @@
   .video-frame iframe{position:absolute;inset:0;width:100%;height:100%;border:0;display:block}
   /* oblojka — video birinchi marta boshlanmaguncha turadi (bosish iframe'ga o'tadi) */
   .video-frame .v-cover{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:1;pointer-events:none;transition:opacity .3s ease}
-  .video-frame.started .v-cover{opacity:0}
+  .video-frame.shown .v-cover{opacity:0}
   /* markaziy play tugma — faqat ko'rinish (pointer-events:none: bosish iframe'ga o'tadi), video to'xtaganda ko'rinadi */
   .video-frame .v-play{
     position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);
@@ -264,7 +267,12 @@
     position:absolute;inset:0;z-index:1;pointer-events:none;transition:opacity .3s ease;
     background:linear-gradient(rgba(6,26,43,.2),rgba(6,26,43,.2)),url(cover.jpg) center/cover no-repeat,#0a2740;
   }
-  .video-frame.started .v-placeholder{opacity:0}
+  .video-frame.shown .v-placeholder{opacity:0}
+  /* Play bosilgandan birinchi kadr chiqquncha: muqova turadi + aylanuvchi indikator (qora ekran o'rniga) */
+  .video-frame .v-spin{position:absolute;left:50%;top:50%;width:54px;height:54px;margin:-27px 0 0 -27px;z-index:3;pointer-events:none;
+    border:4px solid rgba(255,255,255,.28);border-top-color:#7dd3fc;border-radius:50%;opacity:0;transition:opacity .2s;animation:vspin .8s linear infinite}
+  .video-frame.started:not(.shown) .v-spin{opacity:1}
+  @keyframes vspin{to{transform:rotate(360deg)}}
   .hero{position:relative;z-index:2;padding:70px 0 90px}
   .reveal{opacity:0;transform:translateY(28px);transition:opacity .7s ease,transform .7s ease}
   .reveal.in{opacity:1;transform:none}
@@ -330,6 +338,7 @@
         <button class="v-close" id="vClose" type="button" aria-label="Yopish">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg>
         </button>
+        <div class="v-spin" aria-hidden="true"></div>
         <div class="v-tap" id="vTap"></div>
         <div class="v-hint" id="vHint" aria-hidden="true">
           <div class="tap"><svg viewBox="0 0 24 24"><path d="M9 11.24V7.5a2.5 2.5 0 0 1 5 0v3.74c1.21-.81 2-2.18 2-3.74C16 5.01 13.99 3 11.5 3S7 5.01 7 7.5c0 1.56.79 2.93 2 3.74zm9.84 4.63l-4.54-2.26c-.17-.07-.35-.11-.54-.11H13v-6c0-.83-.67-1.5-1.5-1.5S10 6.67 10 7.5v10.74l-3.43-.72c-.08-.01-.15-.03-.24-.03-.31 0-.59.13-.79.33l-.79.8 4.94 4.94c.37.37.88.58 1.41.58h6.67c.98 0 1.81-.7 1.97-1.67l.76-4.54c.03-.08.04-.16.04-.23 0-.67-.37-1.25-.9-1.55z"/></svg></div>
@@ -458,6 +467,7 @@
     let hintArm = null;   // ikki marta bosish ko'rsatmasi (pastda belgilanadi)
     const onPlay  = () => {
       frame.classList.add('playing', 'started');
+      setTimeout(() => frame.classList.add('shown'), 8000);   // zaxira: 8 soniyada baribir muqovani olib tashlaymiz
       if (hintArm) hintArm();
       if (!tStarted) { tStarted = true; Track.send({ started: true, duration: Math.floor(duration) }); }
     };
@@ -479,6 +489,7 @@
     const onTime = ct => {
       if (ct > maxT + 1.5) return false;
       if (ct > maxT) maxT = ct;
+      if (ct > 0.05) frame.classList.add('shown');   // birinchi kadr chiqdi — muqovani olib tashlaymiz
       if (duration) vFill.style.width = Math.min(100, ct / duration * 100).toFixed(2) + '%';
       if (ct >= REVEAL_AT) fireOnce();
       return true;
@@ -502,7 +513,7 @@
       vid.setAttribute('playsinline', '');
       vid.setAttribute('webkit-playsinline', '');
       vid.playsInline = true;
-      vid.preload = 'metadata';
+      vid.preload = 'auto';
       vid.src = MP4_URL || HLS_URL;
       holder.replaceWith(vid);
 
@@ -522,7 +533,7 @@
         factory.create('kPlayer', {
           url: VIDEO_URL,
           size: { width: '100%', height: '100%' },
-          behavior: { keyboard: false, localStorage: false, playsInline: true, autoPlay: false, preload: 'metadata' },
+          behavior: { keyboard: false, localStorage: false, playsInline: true, autoPlay: false, preload: 'auto' },
           ui: { controls: false, mainPlayButton: false },
           theme: { colors: { primary: '#7dd3fc' } }
         }).then(player => {
