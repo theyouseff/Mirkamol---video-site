@@ -40,7 +40,7 @@ module.exports = async (req, res) => {
     if (!uids.length) return res.status(200).json({ enabled, dry, checked: 0, due: [], sent: [] });
 
     // 2) shu uid larning hamma sessiyalari (oxirigacha ko'rganmi, 1-kunlik tugma orqali kirganmi — hammasi shundan)
-    const r2 = await fetch(`${url}/rest/v1/sessions?select=uid,source,started,ended,max_sec,duration,updated_at&uid=in.(${uids.join(',')})&limit=10000`, { headers: H });
+    const r2 = await fetch(`${url}/rest/v1/sessions?select=*&uid=in.(${uids.join(',')})&limit=10000`, { headers: H });
     if (!r2.ok) return res.status(502).json({ error: 'db ' + r2.status });
     let due = pickDue(await r2.json(), Date.now(), opts);
 

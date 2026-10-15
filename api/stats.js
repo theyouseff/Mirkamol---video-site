@@ -35,7 +35,7 @@ module.exports = async (req, res) => {
   const toDay = dateRe.test(q.to || '') ? q.to : new Date().toISOString().slice(0, 10);
   const to = new Date(Date.parse(toDay) + 86400000).toISOString().slice(0, 10);
 
-  const cols = 'sid,vid,created_at,source,device,country,started,ended,reached_cta,cta_clicked,max_sec,duration';
+  const cols = '*';
   const dateFilter = `created_at=gte.${from}&created_at=lt.${to}`;
   const sel = String(q.source || '').slice(0, 64);
   let filter = dateFilter;

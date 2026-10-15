@@ -87,3 +87,14 @@ O'chirish: Vercel'da `REMINDERS_ENABLED=0`, yoki Supabase'da `select cron.unsche
 - Oxirigacha ko'rmagan va 70% gacha (shu jumladan) ko'rgan
 - Har odamga umr bo'yi **bir marta** (jadval `reminders`); bot bloklangan bo'lsa xato yoziladi, qayta urinilmaydi
 - Zaxira taymer: cron-job.org da har 1 daqiqada `https://mirkamol-lor-jarroh.vercel.app/api/remind?key=<WATCH_API_KEY>`
+
+---
+
+# Haqiqiy ko'rilgan vaqt (sakrashdan keyin to'g'ri statistika)
+
+Progress barni sudrab sakrash mumkin bo'lgani uchun "qancha ko'rdi" endi **haqiqatan o'ynalgan noyob soniyalar** bo'yicha hisoblanadi (`watched_sec`).
+`max_sec` (eng uzoq joy) saqlanadi, lekin o'rtacha vaqt, voronka (25/50/75%), "oxirigacha ko'rdi" (90%+) va eslatma `watched_sec` ga tayanadi.
+Eski yozuvlar (sakrash imkoni bo'lmagan davrdagi) `max_sec` bilan hisoblanaveradi.
+
+**Bir marta:** Supabase → SQL Editor → `supabase/migration-watched.sql` ni to'liq qo'yib **Run**.
+(Bajarilmaguncha sayt eskicha ishlayveradi, hech narsa buzilmaydi; faqat yangi ko'rsatkich yozilmaydi.)

@@ -39,16 +39,21 @@ module.exports = async (req, res) => {
     p_max_sec: int(b.max_sec, 86400),
     p_duration: int(b.duration, 86400),
   };
+  const watched = int(b.watched_sec, 86400);
 
   // uid (Telegram bot orqali kelgan tomoshabin ID si) faqat bor bo'lsa yuboriladi
   if (/^[A-Za-z0-9_-]{1,64}$/.test(b.uid || '')) args.p_uid = b.uid;
 
+  const call = a => fetch(url + '/rest/v1/rpc/track_session', {
+    method: 'POST',
+    headers: { apikey: key, Authorization: 'Bearer ' + key, 'Content-Type': 'application/json' },
+    body: JSON.stringify(a),
+  });
   try {
-    const r = await fetch(url + '/rest/v1/rpc/track_session', {
-      method: 'POST',
-      headers: { apikey: key, Authorization: 'Bearer ' + key, 'Content-Type': 'application/json' },
-      body: JSON.stringify(args),
-    });
+    // watched_sec (haqiqiy ko'rilgan vaqt) uchun supabase/migration-watched.sql ishga tushirilgan bo'lishi kerak;
+    // hali tushirilmagan bo'lsa, eski usulda (watched_sec siz) yozamiz — kuzatuv to'xtamaydi.
+    let r = await call(watched === null ? args : Object.assign({ p_watched_sec: watched }, args));
+    if (!r.ok && watched !== null && (r.status === 404 || r.status === 400)) r = await call(args);
     return res.status(r.ok ? 204 : 502).end();
   } catch (e) {
     return res.status(502).end();

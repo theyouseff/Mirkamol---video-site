@@ -21,7 +21,7 @@ module.exports = async (req, res) => {
 
   const leftAfter = Math.max(15, Math.min(1800, parseInt(process.env.LEFT_AFTER_SEC, 10) || 90));
   try {
-    const cols = 'started,ended,reached_cta,cta_clicked,max_sec,duration,updated_at';
+    const cols = '*';
     const r = await fetch(`${url}/rest/v1/sessions?select=${cols}&uid=eq.${encodeURIComponent(uid)}&order=updated_at.desc&limit=20`, {
       headers: { apikey: key, Authorization: 'Bearer ' + key },
     });

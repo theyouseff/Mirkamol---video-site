@@ -460,7 +460,7 @@
     const fireOnce = () => {
       if (fired) return;
       fired = true;
-      Track.send({ reached_cta: true, max_sec: Math.floor(maxT), duration: Math.floor(duration) });
+      Track.send({ reached_cta: true, max_sec: Math.floor(maxT), watched_sec: watchedSec(), duration: Math.floor(duration) });
       if (!qualify || !qualify.hidden) return;
       qualify.hidden = false;
       requestAnimationFrame(() => {
@@ -470,6 +470,10 @@
 
     // Umumiy holat: progress bar, 26:53 da CTA, oldinga o'tkazishni bloklash
     let maxT = 0, duration = 0;
+    // Haqiqiy ko'rilgan vaqt: faqat uzluksiz o'ynalgan soniyalar (sakrash va qayta ko'rish hisobga olinmaydi)
+    const seen = new Set();
+    let prevT = null;
+    const watchedSec = () => Math.min(seen.size, duration ? Math.ceil(duration) : seen.size);
     let tStarted = false;
     let hintArm = null;   // ikki marta bosish ko'rsatmasi (pastda belgilanadi)
     const onPlay  = () => {
@@ -482,11 +486,11 @@
     const onEnded = () => {
       frame.classList.remove('playing');
       if (duration) maxT = Math.max(maxT, duration);
-      Track.send({ ended: true, max_sec: Math.floor(maxT), duration: Math.floor(duration) });
+      Track.send({ ended: true, max_sec: Math.floor(maxT), watched_sec: watchedSec(), duration: Math.floor(duration) });
       fireOnce();
     };
     // Ko'rish jarayoni: har 5 soniyada eng uzoq soniya yuboriladi; sahifa yopilganda ham
-    const sendProgress = () => { if (tStarted) Track.send({ max_sec: Math.floor(maxT), duration: Math.floor(duration) }); };
+    const sendProgress = () => { if (tStarted) Track.send({ max_sec: Math.floor(maxT), watched_sec: watchedSec(), duration: Math.floor(duration) }); };
     setInterval(() => { if (frame.classList.contains('playing')) sendProgress(); }, 5000);
     document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'hidden') sendProgress(); });
     addEventListener('pagehide', sendProgress);
@@ -494,6 +498,11 @@
     if (ctaEl) ctaEl.addEventListener('click', () => Track.send({ cta_clicked: true }));
     // Istalgan joyga o'tkazish mumkin; maxT — eng uzoq soniya (statistika uchun)
     const onTime = ct => {
+      if (frame.classList.contains('playing') && prevT !== null) {
+        const d = ct - prevT;
+        if (d > 0 && d <= 3) for (let s = Math.floor(prevT); s <= Math.floor(ct); s++) seen.add(s);   // sakrash (d katta) hisobga olinmaydi
+      }
+      prevT = ct;
       if (ct > maxT) maxT = ct;
       if (ct > 0.05) frame.classList.add('shown');   // birinchi kadr chiqdi — muqovani olib tashlaymiz
       if (duration) vFill.style.width = Math.min(100, ct / duration * 100).toFixed(2) + '%';
@@ -595,6 +604,7 @@
     // Progress bar: bosish yoki sudrab o'tkazish
     const vBar = document.getElementById('vBar');
     const seekTo = sec => {
+      prevT = null;
       try { if (vid) vid.currentTime = sec; else if (kp) kp.seekTo(sec); } catch (e) {}
     };
     if (vBar) {

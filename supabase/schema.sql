@@ -15,7 +15,8 @@ create table if not exists public.sessions (
   ended       boolean not null default false,   -- oxirigacha ko'rdimi
   reached_cta boolean not null default false,   -- tugma chiqqan joyga yetdimi
   cta_clicked boolean not null default false,   -- tugmani bosdimi
-  max_sec     integer not null default 0,       -- eng uzoq ko'rgan soniyasi
+  max_sec     integer not null default 0,       -- eng uzoq ko'rgan soniyasi (joy)
+  watched_sec integer,                          -- haqiqiy ko'rilgan noyob soniyalar (sakrash hisobga olinmaydi)
   duration    integer,                          -- video uzunligi (soniya)
   uid         text                              -- Telegram bot orqali kelgan tomoshabin ID si
 );
@@ -34,25 +35,27 @@ create or replace function public.track_session(
   p_started boolean default null, p_ended boolean default null,
   p_reached_cta boolean default null, p_cta_clicked boolean default null,
   p_max_sec integer default null, p_duration integer default null,
-  p_uid text default null
+  p_uid text default null, p_watched_sec integer default null
 ) returns void
 language plpgsql
 as $$
 begin
   insert into public.sessions as s
     (sid, vid, source, medium, campaign, ref, device, country,
-     started, ended, reached_cta, cta_clicked, max_sec, duration, uid)
+     started, ended, reached_cta, cta_clicked, max_sec, duration, uid, watched_sec)
   values
     (p_sid, p_vid, p_source, p_medium, p_campaign, p_ref, p_device, p_country,
      coalesce(p_started,false), coalesce(p_ended,false),
      coalesce(p_reached_cta,false), coalesce(p_cta_clicked,false),
-     coalesce(p_max_sec,0), p_duration, p_uid)
+     coalesce(p_max_sec,0), p_duration, p_uid, p_watched_sec)
   on conflict (sid) do update set
     started     = s.started     or coalesce(p_started,false),
     ended       = s.ended       or coalesce(p_ended,false),
     reached_cta = s.reached_cta or coalesce(p_reached_cta,false),
     cta_clicked = s.cta_clicked or coalesce(p_cta_clicked,false),
     max_sec     = greatest(s.max_sec, coalesce(p_max_sec,0)),
+    watched_sec = case when p_watched_sec is null then s.watched_sec
+                       else greatest(coalesce(s.watched_sec,0), p_watched_sec) end,
     duration    = coalesce(p_duration, s.duration),
     uid         = coalesce(s.uid, p_uid),
     updated_at  = now();
