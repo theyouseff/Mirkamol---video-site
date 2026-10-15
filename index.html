@@ -192,9 +192,16 @@
     .v-hint.show .tap svg{animation:none}
   }
   @media(max-width:640px){ .v-hint .lbl{font-size:11px;padding:7px 13px} .v-hint .tap{width:84px;height:84px} }
-  /* progress bar — faqat ko'rsatkich (sudrab bo'lmaydi) */
-  .video-frame .v-bar{position:absolute;left:0;right:0;bottom:0;height:5px;background:rgba(255,255,255,.18);z-index:2;pointer-events:none}
-  .video-frame .v-bar-fill{height:100%;width:0;background:#7dd3fc;transition:width .15s linear}
+  /* progress bar — bosib yoki sudrab istalgan joyga o'tkazish mumkin */
+  .video-frame .v-bar{position:absolute;left:0;right:0;bottom:0;height:6px;background:rgba(255,255,255,.18);z-index:4;
+    pointer-events:auto;cursor:pointer;touch-action:none;-webkit-tap-highlight-color:transparent}
+  .video-frame .v-bar::before{content:"";position:absolute;left:0;right:0;top:-16px;bottom:0}   /* barmoq uchun kattaroq tegish zonasi */
+  .video-frame .v-bar-fill{position:relative;height:100%;width:0;background:#7dd3fc;transition:width .15s linear}
+  .video-frame .v-bar-fill::after{content:"";position:absolute;right:-6px;top:50%;width:12px;height:12px;margin-top:-6px;border-radius:50%;background:#fff;
+    box-shadow:0 0 0 3px rgba(125,211,252,.5);opacity:0;transition:opacity .15s}
+  .video-frame .v-bar.drag .v-bar-fill{transition:none}
+  .video-frame .v-bar.drag .v-bar-fill::after,.video-frame.playing:hover .v-bar-fill::after{opacity:1}
+  @media(hover:none){ .video-frame.started .v-bar-fill::after{opacity:1} }
   /* to'liq ekran tugmasi — pastki o'ng burchak */
   .video-frame .v-full{
     position:absolute;right:12px;bottom:14px;z-index:4;
@@ -344,7 +351,7 @@
           <div class="tap"><svg viewBox="0 0 24 24"><path d="M9 11.24V7.5a2.5 2.5 0 0 1 5 0v3.74c1.21-.81 2-2.18 2-3.74C16 5.01 13.99 3 11.5 3S7 5.01 7 7.5c0 1.56.79 2.93 2 3.74zm9.84 4.63l-4.54-2.26c-.17-.07-.35-.11-.54-.11H13v-6c0-.83-.67-1.5-1.5-1.5S10 6.67 10 7.5v10.74l-3.43-.72c-.08-.01-.15-.03-.24-.03-.31 0-.59.13-.79.33l-.79.8 4.94 4.94c.37.37.88.58 1.41.58h6.67c.98 0 1.81-.7 1.97-1.67l.76-4.54c.03-.08.04-.16.04-.23 0-.67-.37-1.25-.9-1.55z"/></svg></div>
           <div class="lbl">Ikki marta bosing<small>to'liq ekran</small></div>
         </div>
-        <div class="v-bar"><div class="v-bar-fill" id="vFill"></div></div>
+        <div class="v-bar" id="vBar"><div class="v-bar-fill" id="vFill"></div></div>
       </div>
     </div>
 
@@ -433,7 +440,7 @@
   Track.send({});
 
   // Video: Kinescope pleyeri (IFrame API) — boshqaruv paneli yo'q, faqat ingichka progress bar.
-  // O'tkazib bo'lmaydi. 26:53 da yoki tugagach "qualify" (CTA tugma) ochiladi.
+  // Progress barni bosib/sudrab istalgan joyga o'tkazish mumkin. 26:53 da yoki tugagach "qualify" (CTA tugma) ochiladi.
   (function () {
     const frame = document.getElementById('videoFrame');
     const holder = document.getElementById('kPlayer');
@@ -485,9 +492,8 @@
     addEventListener('pagehide', sendProgress);
     const ctaEl = document.getElementById('ctaLink');
     if (ctaEl) ctaEl.addEventListener('click', () => Track.send({ cta_clicked: true }));
-    // ct ni qabul qiladi; oldinga sakralgan bo'lsa false qaytaradi (chaqiruvchi orqaga qaytaradi)
+    // Istalgan joyga o'tkazish mumkin; maxT — eng uzoq soniya (statistika uchun)
     const onTime = ct => {
-      if (ct > maxT + 1.5) return false;
       if (ct > maxT) maxT = ct;
       if (ct > 0.05) frame.classList.add('shown');   // birinchi kadr chiqdi — muqovani olib tashlaymiz
       if (duration) vFill.style.width = Math.min(100, ct / duration * 100).toFixed(2) + '%';
@@ -524,9 +530,7 @@
       vid.addEventListener('ended', onEnded);
       vid.addEventListener('loadedmetadata', () => { duration = vid.duration || duration; });
       vid.addEventListener('durationchange', () => { duration = vid.duration || duration; });
-      const guard = () => { if (!onTime(vid.currentTime || 0)) vid.currentTime = maxT; };
-      vid.addEventListener('timeupdate', guard);
-      vid.addEventListener('seeking', guard);   // Apple pleyerining polzunogi bilan oldinga sakrashni to'sish
+      vid.addEventListener('timeupdate', () => onTime(vid.currentTime || 0));
     } else {
       // Kompyuter / Android: Kinescope pleyeri — boshqaruvsiz, klaviatura o'chirilgan
       window.onKinescopeIframeAPIReady = function (factory) {
@@ -541,7 +545,7 @@
           const E = player.Events;
           player.on(E.Ready, e => { duration = (e.data && e.data.duration) || duration; });
           player.on(E.DurationChange, e => { duration = e.data.duration || duration; });
-          player.on(E.TimeUpdate, e => { if (!onTime(e.data.currentTime || 0)) player.seekTo(maxT); });
+          player.on(E.TimeUpdate, e => { onTime(e.data.currentTime || 0); });
           player.on(E.Play, onPlay);
           player.on(E.Playing, onPlay);
           player.on(E.Pause, onPause);
@@ -587,6 +591,34 @@
     if (vFull) vFull.addEventListener('click', e => { e.stopPropagation(); enterFS(); });
     if (vClose) vClose.addEventListener('click', e => { e.stopPropagation(); exitFS(); });
     addEventListener('keydown', e => { if (e.key === 'Escape') exitFS(); });
+
+    // Progress bar: bosish yoki sudrab o'tkazish
+    const vBar = document.getElementById('vBar');
+    const seekTo = sec => {
+      try { if (vid) vid.currentTime = sec; else if (kp) kp.seekTo(sec); } catch (e) {}
+    };
+    if (vBar) {
+      let dragging = false, frac = 0;
+      const calc = e => { const r = vBar.getBoundingClientRect(); frac = Math.min(1, Math.max(0, (e.clientX - r.left) / r.width)); vFill.style.width = (frac * 100).toFixed(2) + '%'; };
+      vBar.addEventListener('pointerdown', e => {
+        if (!duration || !frame.classList.contains('started')) return;
+        e.stopPropagation(); e.preventDefault();
+        dragging = true; vBar.classList.add('drag');
+        try { vBar.setPointerCapture(e.pointerId); } catch (_) {}
+        calc(e);
+      });
+      vBar.addEventListener('pointermove', e => { if (dragging) calc(e); });
+      const end = e => {
+        if (!dragging) return;
+        dragging = false; vBar.classList.remove('drag');
+        calc(e); seekTo(frac * duration);
+        if (frac * duration > maxT) maxT = frac * duration;
+        if (frac * duration >= REVEAL_AT) fireOnce();
+      };
+      vBar.addEventListener('pointerup', end);
+      vBar.addEventListener('pointercancel', () => { dragging = false; vBar.classList.remove('drag'); });
+      vBar.addEventListener('click', e => e.stopPropagation());
+    }
 
     // Bir marta bosish: pauza / davom. Ikki marta bosish: to'liq ekranga o'tish (yoki undan chiqish).
     const tapEl = document.getElementById('vTap');
